@@ -24,3 +24,5 @@ if (PHP_SAPI !== 'cli' && session_status() === PHP_SESSION_NONE) {
 
     session_start();
 }
+
+require_once APP_ROOT . '/App/helpers/core.php';
