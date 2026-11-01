@@ -1,17 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
-// Memanggil konfigurasi aplikasi
 require_once dirname(__DIR__) . '/app/config/bootstrap.php';
 
-// Memanggil koneksi database
 require_once APP_ROOT . '/app/config/database.php';
 
 try {
-    // Membuat koneksi database
     $pdo = db();
 
-    // Menguji query database
     $statement = $pdo->query(
         'SELECT
             current_database() AS database_name,
@@ -32,7 +29,14 @@ try {
 
 } catch (Throwable $error) {
     echo "DATABASE CONNECTION FAILED\n";
-    echo "Error: " . $error->getMessage() . "\n";
+    echo "Error aplikasi: " . $error->getMessage() . "\n";
+
+    $previous = $error->getPrevious();
+
+    if ($previous instanceof PDOException) {
+        echo "Detail PDO: " . $previous->getMessage() . "\n";
+        echo "SQLSTATE: " . $previous->getCode() . "\n";
+    }
 
     exit(1);
 }

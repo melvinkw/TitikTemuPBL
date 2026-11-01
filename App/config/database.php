@@ -1,46 +1,61 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 function db(): PDO
 {
     static $connection = null;
 
-    //menggunakan kembali koneksi selama requestnya berjalan
-    if($connection instanceof PDO){
+    if ($connection instanceof PDO) {
         return $connection;
     }
 
-    $required=[
+    $requiredVariables = [
         'DB_HOST',
         'DB_PORT',
-        'DB_DATABASE',
-        'DB_USERNAME',
-        'DB_PASSWORD'
+        'DB_NAME',
+        'DB_USER',
+        'DB_PASSWORD',
     ];
 
-    foreach($required as $key){
-        if(!isset($_ENV[$key]) || $_ENV[$key] === ''){
-            throw new RuntimeException("Environment variable $key is not set.");
+    foreach ($requiredVariables as $variable) {
+        if (
+            !isset($_ENV[$variable])
+            || $_ENV[$variable] === ''
+        ) {
+            throw new RuntimeException(
+                "Konfigurasi {$variable} belum tersedia di .env"
+            );
         }
     }
 
+    $host = $_ENV['DB_HOST'];
+    $port = $_ENV['DB_PORT'];
+    $database = $_ENV['DB_NAME'];
+    $username = $_ENV['DB_USER'];
+    $password = $_ENV['DB_PASSWORD'];
+    $sslMode = $_ENV['DB_SSLMODE'] ?? 'require';
+
+    // Menyusun DSN untuk koneksi PostgreSQL.
     $dsn = sprintf(
         'pgsql:host=%s;port=%s;dbname=%s;sslmode=%s',
-        $_ENV['DB_HOST'],
-        $_ENV['DB_PORT'],
-        $_ENV['DB_DATABASE'],
-        $_ENV['DB_SSLMODE'] ?? 'prefer'
+        $host,
+        $port,
+        $database,
+        $sslMode
     );
 
-     try {
+    try {
         $connection = new PDO(
             $dsn,
-            $_ENV['DB_USERNAME'],
-            $_ENV['DB_PASSWORD'],
+            $username,
+            $password,
             [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+
+                PDO::ATTR_DEFAULT_FETCH_MODE =>
+                    PDO::FETCH_ASSOC,
+
                 PDO::ATTR_EMULATE_PREPARES => false,
             ]
         );
@@ -48,12 +63,14 @@ function db(): PDO
         return $connection;
 
     } catch (PDOException $error) {
+
         error_log(
-            'Database connection error: ' . $error->getMessage()
+            'Database connection error: '
+            . $error->getMessage()
         );
 
         throw new RuntimeException(
-            'Koneksi database gagal. Periksa konfigurasi database.',
+            'Koneksi database gagal. Periksa konfigurasi .env.',
             0,
             $error
         );
