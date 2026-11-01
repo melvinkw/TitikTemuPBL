@@ -1,0 +1,15 @@
+# Environment
+.env
+
+# Composer
+/vendor/
+
+# Node.js
+/node_modules/
+
+# Generated Tailwind CSS
+/public/assets/css/app.css
+
+# OS
+.DS_Store
+Thumbs.db
