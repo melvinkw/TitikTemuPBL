@@ -4,93 +4,48 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 2) . '/App/config/bootstrap.php';
 require_once APP_ROOT . '/App/config/database.php';
+require_once APP_ROOT . '/App/helpers/auth.php';
+require_once APP_ROOT . '/App/queries/petugas_dashboard_queries.php';
 
-/* preview sementara ngikutin figma */
-$stats = [
-    'pending_reports' => 128,
-    'pending_claims' => 128,
-    'active_students' => 128,
+$currentUser = auth_require_login(['petugas']);
+
+$dashboardError = null;
+
+$dashboardData = [
+    'stats' => [
+        'pending_reports' => 0,
+        'pending_claims' => 0,
+        'active_students' => 0,
+    ],
+    'reports' => [],
+    'recent_students' => [],
 ];
 
-$reports = [
-    [
-        'jenis' => 'Temuan',
-        'judul' => 'TWS Putih',
-        'pelapor' => 'John Doe',
-        'lokasi' => 'LPR 8',
-        'created_at' => '27-10-2026 13:01'
-    ],
-    [
-        'jenis' => 'Kehilangan',
-        'judul' => 'TWS Putih',
-        'pelapor' => 'Jorn Doe',
-        'lokasi' => 'LPR 8',
-        'created_at' => '27-10-2026 17:01'
-    ],
-];
-
-$recentStudents = [
-    [
-        'nama' => 'John Doe',
-        'nim' => '254107060001',
-        'prodi' => 'D-IV Sistem Informasi Bisnis',
-        'last_login' => '27-10-2026 13:01'
-    ],
-    [
-        'nama' => 'Jorn Doe',
-        'nim' => '254107060002',
-        'prodi' => 'D-IV Teknik Informatika',
-        'last_login' => '27-10-2026 17:01'
-    ],
-];
-
-$databaseAvailable = false;
-
-function dashboard_date(?string $value): string
-{
-    if (!$value) {
-        return '—';
-    }
-
-    try {
-        return (new DateTimeImmutable($value))
-            ->format('d-m-Y H:i');
-    } catch (Throwable) {
-        return $value;
-    }
+try {
+    $dashboardData = get_petugas_dashboard_data();
+    $databaseAvailable = true;
+} catch (Throwable $error) {
+    error_log('Gagal memuat data dashboard: ' . $error->getMessage());
+    $dashboardError = 'Gagal memuat data dashboard. Silakan coba lagi nanti.';
 }
 
+$stats = $dashboardData['stats'];
+$reports = $dashboardData['reports'];
+$recentStudents = $dashboardData['recent_students'];
+
 $navItems = [
-    [
-        'label' => 'Dashboard',
-        'href' => base_url('petugas/dashboard.php'),
-        'active' => true
-    ],
-    [
-        'label' => 'Laporan Masuk',
-        'href' => base_url('petugas/laporan/'),
-        'active' => false
-    ],
-    [
-        'label' => 'Lihat Data Master',
-        'href' => base_url('admin/kategori/'),
-        'active' => false
-    ],
-    [
-        'label' => 'Rekapitulasi',
-        'href' => base_url('admin/rekap/'),
-        'active' => false
-    ],
+    ['label' => 'Dashboard', 'href' => base_url('petugas/dashboard.php'), 'active' => true, 'available' => true],
+    ['label' => 'Laporan Masuk', 'href' => null, 'active' => false, 'available' => false],
+    ['label' => 'Lihat Data Master', 'href' => null, 'active' => false, 'available' => false],
+    ['label' => 'Rekapitulasi', 'href' => null, 'active' => false, 'available' => false],
 ];
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <meta name="theme-color" content="#DCE3FD">
 
     <title> Dashboard Petugas | TitikTemu </title>
@@ -127,15 +82,18 @@ $navItems = [
 
                         <?= h($item['label']) ?>
                     </a>
-
                 <?php endforeach; ?>
 
             </div>
-
-            <a href="<?= h(base_url('logout.php')) ?>" class="shrink-0 rounded-lg px-2 py-2 text-sm font-semibold text-tt-coral transition hover:bg-white/50">
-                Logout
-            </a>
-
+            <form method="post" action="<?= h(base_url('logout.php')) ?>" class="shrink-0">
+                <?= csrf_field() ?>
+                <button
+                    type="submit"
+                    class="rounded-lg px-2 py-2 text-sm font-semibold text-tt-coral transition hover:bg-white/50"
+                >
+                    Logout
+                </button>
+            </form>
         </nav>
     </header>
 
@@ -149,7 +107,7 @@ $navItems = [
 
                 <h1 class="font-display text-[28px] font-bold leading-tight">
 
-                    Halo, Petugas! 👋
+                    Halo, <?= h($currentUser['nama'] ?? 'Petugas') ?>! 👋
 
                 </h1>
 
@@ -179,15 +137,10 @@ $navItems = [
 
             </div>
 
-            <?php if (!$databaseAvailable): ?>
-
-                <div class="mx-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-xs text-amber-900">
-
-                    Database belum terhubung. Data yang ditampilkan
-                    merupakan data contoh untuk preview.
-
+             <?php if ($dashboardError !== null): ?>
+                <div role="alert" class="mx-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                    <?= h($dashboardError) ?>
                 </div>
-
             <?php endif; ?>
 
             <!-- STATISTICS -->
@@ -196,12 +149,7 @@ $navItems = [
                 <article class="rounded-2xl border border-tt-outline bg-white p-6 shadow-sm">
 
                     <p class="font-display text-3xl font-bold">
-                        <?= number_format(
-                            $stats['pending_reports'],
-                            0,
-                            ',',
-                            '.'
-                        ) ?>
+                        <?= number_format((int) $stats['pending_reports'], 0, ',', '.') ?>
                     </p>
 
                     <p class="mt-2 text-base leading-snug">
@@ -213,12 +161,7 @@ $navItems = [
                 <article class="rounded-2xl border border-tt-outline bg-white p-6 shadow-sm">
 
                     <p class="font-display text-3xl font-bold">
-                        <?= number_format(
-                            $stats['pending_claims'],
-                            0,
-                            ',',
-                            '.'
-                        ) ?>
+                       <?= number_format((int) $stats['pending_claims'], 0, ',', '.') ?>
                     </p>
 
                     <p class="mt-2 text-base leading-snug">
@@ -230,12 +173,7 @@ $navItems = [
                 <article class="rounded-2xl border border-tt-outline bg-white p-6 shadow-sm sm:col-span-2 xl:col-span-1">
 
                     <p class="font-display text-3xl font-bold">
-                        <?= number_format(
-                            $stats['active_students'],
-                            0,
-                            ',',
-                            '.'
-                        ) ?>
+                        <?= number_format((int) $stats['active_students'], 0, ',', '.') ?>
                     </p>
 
                     <p class="mt-2 text-base leading-snug">
@@ -326,13 +264,13 @@ $navItems = [
 
                                             <td class="whitespace-nowrap px-5 py-4 tabular-nums">
 
-                                                <?= h(dashboard_date( $report['created_at'] )) ?>
+                                                <?= h(format_date_time($report['created_at'])) ?>
 
                                             </td>
 
                                             <td class="px-5 py-4 text-center">
 
-                                                <a href="<?= h( base_url('petugas/laporan/') ) ?>" class="inline-flex min-h-10 items-center justify-center rounded-[10px] bg-tt-navy px-4 py-2 text-sm font-semibold text-white transition hover:bg-tt-navy/90">
+                                                <a href="<?= h(base_url('petugas/laporan/')) ?>" class="inline-flex min-h-10 items-center justify-center rounded-[10px] bg-tt-navy px-4 py-2 text-sm font-semibold text-white transition hover:bg-tt-navy/90">
 
                                                     Periksa
 
@@ -437,9 +375,7 @@ $navItems = [
 
                                             <td class="whitespace-nowrap px-5 py-4 tabular-nums">
 
-                                                <?= h(dashboard_date(
-                                                    $student['last_login']
-                                                )) ?>
+                                                <?= h(format_date_time($student['last_login'])) ?>
 
                                             </td>
 

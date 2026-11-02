@@ -5,10 +5,10 @@
   "directories": {
     "test": "tests"
   },
-  "scripts": {
-      "dev": "npx @tailwindcss/cli -i ./resources/css/app.css -o ./public/assets/css/app.css --watch",
-      "build": "npx @tailwindcss/cli -i ./resources/css/app.css -o ./public/assets/css/app.css --minify"
-  },
+"scripts": {
+    "dev": "npx @tailwindcss/cli -i ./resources/css/App.css -o ./Public/assets/css/app.css --watch",
+    "build": "npx @tailwindcss/cli -i ./resources/css/App.css -o ./Public/assets/css/app.css --minify"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
