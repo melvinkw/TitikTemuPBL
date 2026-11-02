@@ -154,20 +154,38 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
     </div>
 
     <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div class="rounded-xl border border-indigo-200 bg-white p-6">
-            <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-tt-navy text-xl text-white">✓</div>
-            <h3 class="mt-4 font-display text-lg font-semibold">1. Laporkan</h3>
-            <p class="mt-3 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <div class="rounded-xl border border-indigo-200 bg-white p-8">
+            <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-tt-navy text-white">
+                <!-- Ikon centang dalam lingkaran -->
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M8.5 12.5l2.5 2.5 4.5-5"></path>
+                </svg>
+            </div>
+            <h3 class="mt-3 font-display text-lg font-semibold">1. Laporkan</h3>
+            <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
         </div>
-        <div class="rounded-xl border border-indigo-200 bg-white p-6">
-            <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-tt-navy text-xl text-white">✓</div>
-            <h3 class="mt-4 font-display text-lg font-semibold">2. Diperiksa</h3>
-            <p class="mt-3 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <div class="rounded-xl border border-indigo-200 bg-white p-8">
+            <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-tt-navy text-white">
+                <!-- Ikon centang dalam lingkaran -->
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M8.5 12.5l2.5 2.5 4.5-5"></path>
+                </svg>
+            </div>
+            <h3 class="mt-3 font-display text-lg font-semibold">2. Diperiksa</h3>
+            <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
         </div>
-        <div class="rounded-xl border border-indigo-200 bg-white p-6">
-            <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-tt-navy text-xl text-white">✓</div>
-            <h3 class="mt-4 font-display text-lg font-semibold">3. Verifikasi</h3>
-            <p class="mt-3 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <div class="rounded-xl border border-indigo-200 bg-white p-8">
+            <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-tt-navy text-white">
+                <!-- Ikon centang dalam lingkaran -->
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M8.5 12.5l2.5 2.5 4.5-5"></path>
+                </svg>
+            </div>
+            <h3 class="mt-3 font-display text-lg font-semibold">3. Verifikasi</h3>
+            <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
         </div>
     </div>
 
