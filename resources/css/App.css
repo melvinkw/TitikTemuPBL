@@ -6,8 +6,24 @@
 
 /* Warna utama TitikTemu */
 @theme {
-    --color-tt-lavender: #E2E7FF;
-    --color-tt-white: #FFFFFF;
-    --color-tt-yellow: #FFC936;
-    --color-tt-navy: #071A49;
+    --color-tt-primary: #DCE3FD;
+    --color-tt-secondary: #02103D;
+    --color-tt-tertiary: #FA9B2D;
+    --color-tt-navy: #02103D;
+    --color-tt-orange: #FA9B2D;
+    --color-tt-coral: #EC745C;
+    --color-tt-outline: #8795C7;
+    --color-tt-tablehead: #E9EDFF;
+    --color-tt-muted: #8795C7;
+
+    --font-body: "Inter", sans-serif;
+    --font-display: "League Spartan", sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
 }
