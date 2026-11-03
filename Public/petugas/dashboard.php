@@ -179,18 +179,7 @@ $navItems = [
 
             </div>
 
-            <?php if (!$databaseAvailable): ?>
-
-                <div class="mx-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-xs text-amber-900">
-
-                    Database belum terhubung. Data yang ditampilkan
-                    merupakan data contoh untuk preview.
-
-                </div>
-
-            <?php endif; ?>
-
-            <!-- STATISTICS -->
+            <!-- statistic card -->
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
 
                 <article class="rounded-2xl border border-tt-outline bg-white p-6 shadow-sm">
