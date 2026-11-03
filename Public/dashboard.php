@@ -6,6 +6,9 @@ require_once dirname(__DIR__) . '/App/config/bootstrap.php';
 require_once APP_ROOT . '/App/helpers/auth.php';
 
 $user = auth_require_login();
+if ($user['role'] === 'petugas') {
+    redirect('/petugas/dashboard.php');
+}
 $roleLabels = [
     'mahasiswa' => 'Mahasiswa',
     'petugas' => 'Petugas',
