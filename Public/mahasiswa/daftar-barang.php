@@ -38,24 +38,24 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
     <form action="" method="GET" class="mt-8 rounded-xl border border-indigo-200 bg-white p-4">
         <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
             <div>
-                <label class="block font-display text-sm font-semibold">Nama Barang</label>
+                <label class="block font-display text-base font-semibold">Nama Barang</label>
                 <input type="text" name="nama" placeholder="Contoh: Tumbler, Earbuds"
-                       class="mt-2 w-full rounded-lg border border-indigo-200 px-3 py-3 text-sm placeholder:text-indigo-200">
+                       class="mt-2 h-12 w-full rounded-[10px] border border-tt-outline px-3 text-sm placeholder:text-tt-outline">
             </div>
             <div>
-                <label class="block font-display text-sm font-semibold">Jenis</label>
+                <label class="block font-display text-base font-semibold">Jenis</label>
                 <input type="text" name="jenis" placeholder="Contoh: Barang Temuan"
-                       class="mt-2 w-full rounded-lg border border-indigo-200 px-3 py-3 text-sm placeholder:text-indigo-200">
+                       class="mt-2 h-12 w-full rounded-[10px] border border-tt-outline px-3 text-sm placeholder:text-tt-outline">
             </div>
             <div>
-                <label class="block font-display text-sm font-semibold">Lokasi Kejadian</label>
+                <label class="block font-display text-base font-semibold">Lokasi Kejadian</label>
                 <input type="text" name="lokasi" placeholder="Contoh: Lobby Gedung Sipil lt 1"
-                       class="mt-2 w-full rounded-lg border border-indigo-200 px-3 py-3 text-sm placeholder:text-indigo-200">
+                       class="mt-2 h-12 w-full rounded-[10px] border border-tt-outline px-3 text-sm placeholder:text-tt-outline">
             </div>
             <div>
-                <label class="block font-display text-sm font-semibold">Kategori barang</label>
+                <label class="block font-display text-base font-semibold">Kategori barang</label>
                 <input type="text" name="kategori" placeholder="Contoh: Elektronik"
-                       class="mt-2 w-full rounded-lg border border-indigo-200 px-3 py-3 text-sm placeholder:text-indigo-200">
+                       class="mt-2 h-12 w-full rounded-[10px] border border-tt-outline px-3 text-sm placeholder:text-tt-outline">
             </div>
         </div>
 
