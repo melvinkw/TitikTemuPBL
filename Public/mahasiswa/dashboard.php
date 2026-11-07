@@ -10,7 +10,7 @@ require_once __DIR__ . '/../../App/config/bootstrap.php';
 
 $pageTitle = 'Dashboard';
 $menuAktif = 'dashboard';
-$namaUser = 'John Doe'; // Nama dummy — nanti diambil dari data login
+$namaUser = 'Mafaza';
 
 // Data dummy — nanti diganti dari database
 // Barang temuan di sini = yang sudah disetujui/diterima satpam atau admin.
@@ -38,7 +38,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 
     <!-- Banner -->
     <div class="mt-6 rounded-xl border border-indigo-200 bg-white p-6">
-        <div class="flex flex-col items-center gap-6 md:flex-row">
+        <div class="flex md:flex-row flex-col items-center gap-6 ">
             <div class="flex-1">
                 <p class="text-xs font-semibold">LOST &amp; FOUND POLINEMA</p>
                 <h2 class="mt-2 font-display text-4xl font-extrabold leading-tight md:text-5xl">
@@ -48,7 +48,9 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                 </h2>
                 <p class="mt-4 text-xs text-gray-500">Platform lost &amp; found untuk membantu warga Polinema melaporkan, mencari, dan menemukan kembali barang yang hilang.</p>
             </div>
-            <img src="<?= base_url('assets/images/ilustrasi-hero.png') ?>" alt="Ilustrasi TitikTemu" class="w-full max-w-xl">
+            <div class="flex-1 w-full">
+                <img src="<?= base_url('assets/images/ilustrasi-hero.png') ?>" alt="Ilustrasi TitikTemu">
+            </div>
         </div>
 
         <div class="mt-6 flex gap-2">
