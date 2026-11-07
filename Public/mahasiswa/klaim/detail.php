@@ -59,14 +59,19 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
             <p class="mt-3 text-xs">Ajukan klaim dengan menyebutkan ciri atau bukti yang tidak ditampilkan secara publik.</p>
 
             <form action="#" method="POST" class="mt-6">
-                <label class="block font-display text-sm font-semibold">Bukti / ciri kepemilikan*</label>
+                <label class="block font-display text-base font-semibold">Bukti / ciri kepemilikan*</label>
                 <textarea name="bukti" rows="3" placeholder="Tuliskan detail/ciri-ciri umum barang"
-                          class="mt-2 w-full rounded-lg border border-indigo-200 px-3 py-3 text-sm placeholder:text-indigo-200"></textarea>
+                          class="mt-2 h-[89px] w-full rounded-[10px] border border-tt-outline p-3 text-sm placeholder:text-tt-outline"></textarea>
 
-                <label class="mt-4 block font-display text-sm font-semibold">Foto barang (max 3)*</label>
-                <input type="file" name="foto[]" multiple
-                       class="mt-2 w-full rounded-lg border border-indigo-200 px-3 py-2 text-sm file:mr-3 file:rounded file:border-0 file:bg-indigo-50 file:px-3 file:py-1">
-                <p class="mt-3 text-xs">JPG, PNG, WebP, PDF maksimal 5 MB.</p>
+                <label class="mt-4 block font-display text-base font-semibold">Foto barang (max 3)*</label>
+                <!-- Kotak pilih file: input asli disembunyikan, kotaknya bisa diklik -->
+                <label class="mt-2 flex h-12 w-full cursor-pointer items-center gap-2.5 rounded-[10px] border border-tt-outline bg-white px-3 text-sm">
+                    <img src="<?= base_url('assets/images/icon-chevron-down.svg') ?>" alt="" class="h-6 w-6">
+                    <span>No File Choosen</span>
+                    <input type="file" name="foto[]" multiple class="hidden"
+                           onchange="this.previousElementSibling.textContent = this.files.length + ' file dipilih'">
+                </label>
+                <p class="mt-2 text-xs">JPG, PNG, WebP, PDF maksimal 5 MB.</p>
 
                 <!-- Sementara langsung ke Riwayat (sesuai prototype), nanti diganti submit form -->
                 <a href="<?= base_url('mahasiswa/riwayat.php') ?>" class="mt-4 block w-full rounded-lg bg-tt-navy py-3 text-center text-sm font-semibold text-white hover:bg-tt-orange hover:text-tt-navy">Ajukan Klaim</a>
