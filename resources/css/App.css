@@ -2,13 +2,12 @@
 @import "tailwindcss";
 
 /* Lokasi file PHP yang berisi class Tailwind */
-@source "../../public";
+@source "../../Public";
 
 /* Warna utama TitikTemu */
 @theme {
     --color-tt-primary: #DCE3FD;
     --color-tt-secondary: #02103D;
-    --color-tt-tertiary: #FA9B2D;
     --color-tt-navy: #02103D;
     --color-tt-orange: #FA9B2D;
     --color-tt-coral: #EC745C;
