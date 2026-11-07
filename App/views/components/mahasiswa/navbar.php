@@ -10,7 +10,6 @@
 $menuAktif = $menuAktif ?? '';
 ?>
 <nav class="flex items-center justify-between border-b border-indigo-200 px-4 py-6 md:px-20">
-    <!-- Spacer kiri supaya menu tetap di tengah -->
     <div class="w-16"></div>
 
     <!-- Menu tengah -->
