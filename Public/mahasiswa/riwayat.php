@@ -28,7 +28,7 @@ require_once APP_ROOT . '/App/views/components/header.php';
 require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 ?>
 
-<main class="w-full px-4 py-8 md:px-20">
+<main class="w-full px-8 py-8 md:px-20">
 
     <!-- Judul halaman -->
     <p class="text-xs font-semibold">LOST &amp; FOUND POLINEMA</p>
@@ -136,7 +136,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                         <td class="px-6 py-4"><?= h($klaim['bukti']) ?></td>
                         <td class="px-6 py-4"><?= h($klaim['waktu']) ?></td>
                         <td class="px-6 py-4">
-                            <span class="rounded-full bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-700"><?= h($klaim['status']) ?></span>
+                            <span class="rounded-full bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-700 whitespace-nowrap"><?= h($klaim['status']) ?></span>
                         </td>
                         <td class="px-6 py-4"><?= h($klaim['catatan']) ?></td>
                     </tr>
