@@ -25,7 +25,7 @@ require_once APP_ROOT . '/App/views/components/header.php';
 require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 ?>
 
-<main class="w-full px-4 py-6 md:px-20">
+<main class="w-full px-8 py-6 md:px-20">
 
     <!-- Kembali ke halaman sebelumnya -->
     <a href="javascript:history.back()" class="text-sm font-semibold hover:text-tt-orange">&lt;&lt; Kembali ke daftar</a>
