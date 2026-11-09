@@ -137,65 +137,64 @@ $linkTutup    = $linkTutup ?? '#';
         </div> <!-- Penutup grid tanggal dan lokasi -->
 
         <!-- Upload dan pos penyerahan -->
+
         <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2" id="upload-fields">
 
-            <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2" id="upload-fields">
+            <!-- Foto -->
+            <div id="foto-field" class="md:col-span-2">
+                <label class="block font-display text-base font-semibold" id="label-foto">
+                    Foto barang (opsional)
+                </label>
 
-                <!-- Foto -->
-                <div id="foto-field" class="md:col-span-2">
-                    <label class="block font-display text-base font-semibold" id="label-foto">
-                        Foto barang (opsional)
-                    </label>
+                <input
+                    type="file"
+                    name="foto[]"
+                    id="foto"
+                    multiple
+                    accept=".jpg,.jpeg,.png,.webp,.pdf"
+                    class="mt-2 w-full rounded-[10px] border border-tt-outline p-3 text-sm">
 
-                    <input
-                        type="file"
-                        name="foto[]"
-                        id="foto"
-                        multiple
-                        accept=".jpg,.jpeg,.png,.webp,.pdf"
-                        class="mt-2 w-full rounded-[10px] border border-tt-outline p-3 text-sm">
-
-                    <p class="mt-2 text-xs">
-                        JPG, PNG, WebP, PDF maksimal 5 MB.
-                    </p>
-                </div>
-
-                <!-- Pos penyerahan -->
-                <div id="pos-field" class="hidden">
-                    <label class="block font-display text-base font-semibold">
-                        Titik penyerahan barang temuan*
-                    </label>
-
-                    <select
-                        name="id_pos"
-                        id="id-pos"
-                        class="mt-2 h-12 w-full rounded-[10px] border border-tt-outline px-3 text-sm"
-                        disabled>
-                        <option value="">Pilih Pos Penyerahan</option>
-
-                        <?php foreach ($posAktif as $pos): ?>
-                            <option value="<?= (int) $pos['id_pos'] ?>">
-                                <?= h($pos['nama_pos']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
+                <p class="mt-2 text-xs">
+                    JPG, PNG, WebP, PDF maksimal 5 MB.
+                </p>
             </div>
-            <!-- Tombol -->
-            <div class="mt-4 flex gap-2.5 p-2.5">
-                <button
-                    type="submit"
-                    class="h-[43px] rounded-[10px] bg-tt-navy px-[11px] text-sm font-semibold text-white hover:bg-tt-orange hover:text-tt-navy">
-                    Kirim Laporan
-                </button>
 
-                <a
-                    href="<?= h($linkTutup) ?>"
-                    class="flex h-[43px] items-center rounded-[10px] border border-tt-navy px-[11px] text-sm font-semibold hover:bg-indigo-100">
-                    Batal
-                </a>
-            </div> <!-- Penutup area tombol -->
+            <!-- Pos penyerahan -->
+            <div id="pos-field" class="hidden">
+                <label class="block font-display text-base font-semibold">
+                    Titik penyerahan barang temuan*
+                </label>
+
+                <select
+                    name="id_pos"
+                    id="id-pos"
+                    class="mt-2 h-12 w-full rounded-[10px] border border-tt-outline px-3 text-sm"
+                    disabled>
+                    <option value="">Pilih Pos Penyerahan</option>
+
+                    <?php foreach ($posAktif as $pos): ?>
+                        <option value="<?= (int) $pos['id_pos'] ?>">
+                            <?= h($pos['nama_pos']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+        </div>
+        <!-- Tombol -->
+        <div class="mt-4 flex gap-2.5 p-2.5">
+            <button
+                type="submit"
+                class="h-[43px] rounded-[10px] bg-tt-navy px-[11px] text-sm font-semibold text-white hover:bg-tt-orange hover:text-tt-navy">
+                Kirim Laporan
+            </button>
+
+            <a
+                href="<?= h($linkTutup) ?>"
+                class="flex h-[43px] items-center rounded-[10px] border border-tt-navy px-[11px] text-sm font-semibold hover:bg-indigo-100">
+                Batal
+            </a>
+        </div> <!-- Penutup area tombol -->
 
     </form>
 </div>
@@ -220,28 +219,38 @@ $linkTutup    = $linkTutup ?? '#';
             return;
         }
 
-        function updateForm() {
+        function updateForm(updateUrl = false) {
             const isTemuan = jenisSelect.value === 'temuan';
 
-            // Tampilkan atau sembunyikan pos penyerahan.
             posField.classList.toggle('hidden', !isTemuan);
-
-            // Pos hanya aktif dan wajib untuk barang temuan.
             posSelect.disabled = !isTemuan;
             posSelect.required = isTemuan;
 
-            // Foto menjadi wajib untuk barang temuan.
             fotoInput.required = isTemuan;
-
-            // Atur lebar kolom foto.
             fotoField.classList.toggle('md:col-span-2', !isTemuan);
 
-            // Ubah label foto.
             fotoLabel.textContent = isTemuan ?
                 'Foto barang (maksimal 3)*' :
                 'Foto barang (opsional)';
+
+            // Sinkronisasi URL dengan jenis laporan.
+            if (updateUrl) {
+                const url = new URL(window.location.href);
+
+                url.searchParams.set(
+                    'modal',
+                    isTemuan ? 'temuan' : 'hilang'
+                );
+
+                window.history.replaceState({}, '', url.toString());
+            }
         }
 
+        jenisSelect.addEventListener('change', function() {
+            updateForm(true);
+        });
+
+        updateForm(false);
         // Jalankan ketika dropdown berubah.
         jenisSelect.addEventListener('change', updateForm);
 

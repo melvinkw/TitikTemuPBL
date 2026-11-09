@@ -11,7 +11,11 @@ $currentUser = auth_require_role(['mahasiswa']);
 
 require_post();
 verify_csrf();
+$jenisKembali = $_POST['jenis'] ?? 'hilang';
 
+if (!in_array($jenisKembali, ['hilang', 'temuan'], true)) {
+    $jenisKembali = 'hilang';
+}
 try {
     $idPengumuman = submit_pengumuman_report(
         (int) $currentUser['id_pengguna'],
@@ -27,26 +31,26 @@ try {
 
     redirect('/mahasiswa/dashboard.php');
 } catch (InvalidArgumentException $error) {
-    // Pesan validasi memang aman ditampilkan kembali kepada pengguna.
-    flash([
-        'type' => 'error',
-        'message' => $error->getMessage(),
-    ]);
+    http_response_code(422);
 
-    redirect('/mahasiswa/dashboard.php?modal=laporan');
-} catch (Throwable $error) {
-    // Detail teknis hanya masuk log server, bukan ditampilkan ke browser.
-    error_log(
-        '[TitikTemu] Gagal menyimpan laporan: '
-            . get_class($error)
-            . ' - '
-            . $error->getMessage()
+    exit(
+        'VALIDASI GAGAL: ' . h($error->getMessage())
     );
 
-    flash([
-        'type' => 'error',
-        'message' => 'Laporan belum berhasil disimpan. Silakan coba lagi beberapa saat kemudian.',
-    ]);
+} catch (Throwable $error) {
+    error_log(
+        '[TitikTemu] Gagal menyimpan laporan: '
+        . get_class($error)
+        . ' - '
+        . $error->getMessage()
+    );
 
-    redirect('/mahasiswa/dashboard.php?modal=laporan');
+    http_response_code(500);
+
+    exit(
+        'KESALAHAN SERVER: '
+        . h(get_class($error))
+        . ' - '
+        . h($error->getMessage())
+    );
 }
