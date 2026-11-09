@@ -7,10 +7,18 @@
  *   dashboard.php?modal=hilang   atau   dashboard.php?modal=temuan
  */
 require_once __DIR__ . '/../../App/config/bootstrap.php';
+require_once APP_ROOT . '/App/queries/master_queries.php';
+require_once APP_ROOT . '/App/helpers/auth.php';
+
+$currentUser = auth_require_role(['mahasiswa']);
+
+$kategoriAktif = get_kategori_aktif();
+$posAktif = get_pos_aktif();
+$flashMessage = flash();
 
 $pageTitle = 'Dashboard';
 $menuAktif = 'dashboard';
-$namaUser = 'Mafaza';
+$namaUser = $currentUser['nama'];
 
 // Data dummy — nanti diganti dari database
 // Barang temuan di sini = yang sudah disetujui/diterima satpam atau admin.
@@ -202,6 +210,17 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
     </div>
 
 </main>
+
+<?php if ($flashMessage !== null): ?>
+    <?php $isError = ($flashMessage['type'] ?? '') === 'error'; ?>
+
+    <div class="mb-5 rounded-lg border p-4
+        <?= $isError
+            ? 'border-red-300 bg-red-50 text-red-700'
+            : 'border-green-300 bg-green-50 text-green-700' ?>">
+        <?= h($flashMessage['message'] ?? '') ?>
+    </div>
+<?php endif; ?>
 
 <?php
 // Tampilkan modal kalau ada ?modal=hilang atau ?modal=temuan di URL

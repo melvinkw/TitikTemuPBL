@@ -7,7 +7,7 @@ require_once APP_ROOT . '/App/config/database.php';
 require_once APP_ROOT . '/App/helpers/auth.php';
 require_once APP_ROOT . '/App/queries/petugas_dashboard_queries.php';
 
-$currentUser = auth_require_login(['petugas']);
+$currentUser = auth_require_role(['petugas']);
 
 $dashboardError = null;
 
