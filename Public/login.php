@@ -233,7 +233,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                                 NIM atau Username
                             </label>
 
-                            <input class="w-full rounded-xl border border-tt-outline px-3 py-3.5 text-sm outline-none transition placeholder:text-tt-navy/60 focus:border-tt-navy focus:ring-2 focus:ring-tt-navy/10" id="identifier"  type="text" placeholder="Masukan NIM atau Username" value="<?= h($identifierValue) ?>" autocomplete="username" required>
+                            <input class="w-full rounded-xl border border-tt-outline px-3 py-3.5 text-sm outline-none transition placeholder:text-tt-navy/60 focus:border-tt-navy focus:ring-2 focus:ring-tt-navy/10" id="identifier" name="identifier"  type="text" placeholder="Masukan NIM atau Username" value="<?= h($identifierValue) ?>" autocomplete="username" required>
 
                         </div>
 
