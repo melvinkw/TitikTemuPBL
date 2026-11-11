@@ -6,6 +6,9 @@
  * Berisi info barang, foto, status laporan, dan riwayat perubahan status.
  */
 require_once __DIR__ . '/../../../App/config/bootstrap.php';
+require_once APP_ROOT . '/App/helpers/auth.php';
+
+$currentUser = auth_require_role(['mahasiswa']);
 
 $pageTitle = 'Detail Barang';
 $menuAktif = '';
@@ -16,7 +19,7 @@ $barang = [
     'nama'     => 'TWS Huawei',
     'lokasi'   => 'LPR 8',
     'waktu'    => '24 Oktober 2026 12:45',
-    'pelapor'  => 'John Doe',
+    'pelapor'  => $currentUser['nama'],   // laporan milik user yang sedang login
     'status'   => 'Aktif',
     'dibuat'   => '29-10-2026 13:57',
 ];
