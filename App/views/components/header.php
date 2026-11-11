@@ -28,4 +28,4 @@ $pageTitle = $pageTitle ?? 'TitikTemu';
 </head>
 
 <body class="bg-tt-primary font-body text-tt-navy antialiased">
-    <div class="mx-auto flex min-h-screen max-w-[1440px] flex-col">
+    <div class="mx-auto flex min-h-screen max-w-360 flex-col">
