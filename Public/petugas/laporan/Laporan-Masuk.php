@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once dirname(__DIR__, 2) . '/App/config/bootstrap.php';
+require_once dirname(__DIR__, 3) . '/App/config/bootstrap.php';
 require_once APP_ROOT . '/App/config/database.php';
 require_once APP_ROOT . '/App/helpers/auth.php';
 require_once APP_ROOT . '/App/queries/petugas_dashboard_queries.php';
