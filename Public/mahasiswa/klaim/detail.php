@@ -6,6 +6,9 @@
  * Mahasiswa bisa mengajukan klaim kalau merasa barang ini miliknya.
  */
 require_once __DIR__ . '/../../../App/config/bootstrap.php';
+require_once APP_ROOT . '/App/helpers/auth.php';
+
+$currentUser = auth_require_role(['mahasiswa']);
 
 $pageTitle = 'Detail Klaim';
 $menuAktif = '';

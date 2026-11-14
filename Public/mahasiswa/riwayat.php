@@ -5,6 +5,9 @@
  * Ada 3 tabel: laporan temuan, laporan kehilangan, dan laporan klaim.
  */
 require_once __DIR__ . '/../../App/config/bootstrap.php';
+require_once APP_ROOT . '/App/helpers/auth.php';
+
+$currentUser = auth_require_role(['mahasiswa']);
 
 $pageTitle = 'Riwayat Laporan';
 $menuAktif = 'riwayat';
@@ -64,7 +67,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                             <span class="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700"><?= h($laporan['status']) ?></span>
                         </td>
                         <td class="px-6 py-4">
-                            <a href="#" class="font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
+                            <a href="<?= base_url('mahasiswa/laporan/detail.php') ?>" class="font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -101,7 +104,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                             <span class="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700"><?= h($laporan['status']) ?></span>
                         </td>
                         <td class="px-6 py-4">
-                            <a href="#" class="font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
+                            <a href="<?= base_url('mahasiswa/laporan/detail.php') ?>" class="font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

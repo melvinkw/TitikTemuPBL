@@ -31,7 +31,7 @@ $barangTemuan = [
 ];
 
 $barangHilang = [
-    ['nama' => 'MacBook Pro Silver', 'kategori' => 'Elektronik', 'lokasi' => 'LPR 8', 'waktu' => '27-10-2026 13:01', 'status' => 'Aktif'],
+    ['nama' => 'MacBook Pro Silver', 'kategori' => 'Elektronik', 'lokasi' => 'LPR 8', 'waktu' => '27-10-2026 13:01', 'status' => 'Aktif', 'milik_saya' => false],
 ];
 
 require_once APP_ROOT . '/App/views/components/header.php';
@@ -148,7 +148,12 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                             <span class="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700"><?= h($barang['status']) ?></span>
                         </td>
                         <td class="px-6 py-4">
-                            <a href="#" class="font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
+                            <!-- Laporan sendiri → Detail Barang, laporan orang lain → Detail Klaim -->
+                            <?php if ($barang['milik_saya']): ?>
+                                <a href="<?= base_url('mahasiswa/laporan/detail.php') ?>" class="font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
+                            <?php else: ?>
+                                <a href="<?= base_url('mahasiswa/klaim/detail.php') ?>" class="font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

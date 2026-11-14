@@ -32,7 +32,7 @@ $menuAktif = $menuAktif ?? '';
     <form method="post" action="<?= h(base_url('logout.php')) ?>">
         <?= csrf_field() ?>
 
-        <button type="submit" class="...">
+        <button type="submit" class="w-16 cursor-pointer text-right text-sm font-semibold text-tt-coral hover:text-tt-orange">
             Logout
         </button>
     </form>

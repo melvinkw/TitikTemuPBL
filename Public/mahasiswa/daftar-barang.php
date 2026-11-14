@@ -5,6 +5,9 @@
  * Berisi filter pencarian dan kartu barang temuan & kehilangan.
  */
 require_once __DIR__ . '/../../App/config/bootstrap.php';
+require_once APP_ROOT . '/App/helpers/auth.php';
+
+$currentUser = auth_require_role(['mahasiswa']);
 
 $pageTitle = 'Daftar Barang';
 $menuAktif = 'daftar-barang';
