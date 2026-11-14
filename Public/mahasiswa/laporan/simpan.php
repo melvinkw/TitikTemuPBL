@@ -5,8 +5,6 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 3) . '/App/config/bootstrap.php';
 require_once APP_ROOT . '/App/helpers/auth.php';
 require_once APP_ROOT . '/App/actions/pengumuman_actions.php';
-
-// Endpoint ini hanya boleh dipanggil oleh mahasiswa yang sudah login.
 $currentUser = auth_require_role(['mahasiswa']);
 
 require_post();

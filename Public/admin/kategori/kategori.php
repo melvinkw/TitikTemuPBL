@@ -4,6 +4,9 @@
  * Data Master — tab Kategori (Figma: Data Master-kategori).
  */
 require_once __DIR__ . '/../../../App/config/bootstrap.php';
+require_once APP_ROOT . '/App/helpers/auth.php';
+
+$currentUser = auth_require_role(['admin']);
 
 $pageTitle = 'Data Master — Kategori';
 $menuAktif = 'data-master';
