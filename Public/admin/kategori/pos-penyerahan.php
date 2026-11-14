@@ -4,6 +4,9 @@
  * Data Master — tab Pos Penyerahan (Figma: Data Master-pos penyerahan).
  */
 require_once __DIR__ . '/../../../App/config/bootstrap.php';
+require_once APP_ROOT . '/App/helpers/auth.php';
+
+$currentUser = auth_require_role(['admin']);
 
 $pageTitle = 'Data Master — Pos Penyerahan';
 $menuAktif = 'data-master';

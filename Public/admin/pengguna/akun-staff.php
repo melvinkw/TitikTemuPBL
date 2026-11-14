@@ -4,6 +4,9 @@
  * Halaman Akun Staff — kelola akun admin & petugas (Figma: Admin-Akun Staff).
  */
 require_once __DIR__ . '/../../../App/config/bootstrap.php';
+require_once APP_ROOT . '/App/helpers/auth.php';
+
+$currentUser = auth_require_role(['admin']);
 
 $pageTitle = 'Akun Staff';
 $menuAktif = 'akun-staff';

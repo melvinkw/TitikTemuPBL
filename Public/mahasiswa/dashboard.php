@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Public/mahasiswa/dashboard.php
  * Halaman Dashboard mahasiswa (Figma: Mahasiswa-Beranda).
@@ -9,8 +11,12 @@
 require_once __DIR__ . '/../../App/config/bootstrap.php';
 require_once APP_ROOT . '/App/queries/master_queries.php';
 require_once APP_ROOT . '/App/helpers/auth.php';
+require_once APP_ROOT . '/App/queries/mahasiswa_queries.php';
+
 
 $currentUser = auth_require_role(['mahasiswa']);
+
+$idPengguna = (int) $currentUser['id_pengguna'];
 
 $kategoriAktif = get_kategori_aktif();
 $posAktif = get_pos_aktif();
@@ -20,18 +26,20 @@ $pageTitle = 'Dashboard';
 $menuAktif = 'dashboard';
 $namaUser = $currentUser['nama'];
 
-// Data dummy — nanti diganti dari database
-// Barang temuan di sini = yang sudah disetujui/diterima satpam atau admin.
-// milik_saya = true kalau laporan ini dibuat oleh user yang sedang login.
-$barangTemuan = [
-    ['nama' => 'Tumbler Hitam', 'deskripsi' => 'Ini tumbler warna hitam pekat', 'lokasi' => 'LPR 8', 'waktu' => '24 Oktober 2026 12:45', 'milik_saya' => true],
-    ['nama' => 'Tumbler Hitam', 'deskripsi' => 'Ini tumbler warna hitam pekat', 'lokasi' => 'LPR 8', 'waktu' => '24 Oktober 2026 12:45', 'milik_saya' => false],
-    ['nama' => 'Tumbler Hitam', 'deskripsi' => 'Ini tumbler warna hitam pekat', 'lokasi' => 'LPR 8', 'waktu' => '24 Oktober 2026 12:45', 'milik_saya' => false],
-    ['nama' => 'Tumbler Hitam', 'deskripsi' => 'Ini tumbler warna hitam pekat', 'lokasi' => 'LPR 8', 'waktu' => '24 Oktober 2026 12:45', 'milik_saya' => false],
-];
+$statistik = get_mahasiswa_dashboard_stats($idPengguna);
 
-$barangHilang = [
-    ['nama' => 'MacBook Pro Silver', 'kategori' => 'Elektronik', 'lokasi' => 'LPR 8', 'waktu' => '27-10-2026 13:01', 'status' => 'Aktif', 'milik_saya' => false],
+$barangTemuan = get_mahasiswa_recent_public_reports($idPengguna, 'temuan', 4);
+
+$barangHilang = get_mahasiswa_recent_public_reports($idPengguna, 'hilang', 4);
+
+$statusLabels = [
+    'menunggu' => 'Menunggu Pemeriksaan',
+    'aktif' => 'Aktif',
+    'tersedia' => 'Barang Tersedia',
+    'diproses' => 'Sedang Diproses',
+    'selesai' => 'Selesai',
+    'ditolak' => 'Ditolak',
+    'ditutup' => 'Ditutup',
 ];
 
 require_once APP_ROOT . '/App/views/components/header.php';
@@ -70,60 +78,132 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
     <!-- Kotak angka -->
     <div class="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
         <div class="rounded-xl border border-indigo-200 bg-white p-4">
-            <p class="text-xl font-bold">128</p>
+            <p class="text-xl font-bold"><?= number_format($statistik['laporan_hilang']) ?></p>
             <p class="mt-1 text-sm">Laporan Kehilangan Saya</p>
         </div>
         <div class="rounded-xl border border-indigo-200 bg-white p-4">
-            <p class="text-xl font-bold">128</p>
+            <p class="text-xl font-bold"><?= number_format($statistik['laporan_temuan']) ?></p>
             <p class="mt-1 text-sm">Laporan Temuan Saya</p>
         </div>
         <div class="rounded-xl border border-indigo-200 bg-white p-4">
-            <p class="text-xl font-bold">128</p>
+            <p class="text-xl font-bold"><?= number_format($statistik['menunggu_pemeriksaan']) ?></p>
             <p class="mt-1 text-sm">Laporan Menunggu Pemeriksaan</p>
         </div>
         <div class="rounded-xl border border-indigo-200 bg-white p-4">
-            <p class="text-xl font-bold">128</p>
+            <p class="text-xl font-bold"><?= number_format($statistik['laporan_selesai']) ?></p>
             <p class="mt-1 text-sm">Laporan Selesai</p>
         </div>
     </div>
 
     <!-- Barang temuan terbaru -->
+
+    <!-- Barang temuan terbaru -->
     <div class="mt-12 flex items-end justify-between">
         <div>
-            <h2 class="font-display text-xl font-semibold">Barang Temuan Terbaru</h2>
-            <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <h2 class="font-display text-xl font-semibold">
+                Barang Temuan Terbaru
+            </h2>
+            <p class="mt-2 text-xs">
+                Barang temuan yang telah disetujui dan tersedia.
+            </p>
         </div>
-        <a href="<?= base_url('mahasiswa/daftar-barang.php') ?>" class="text-xs font-semibold hover:text-tt-orange">Lihat Semua &gt;&gt;</a>
+
+        <a
+            href="<?= h(base_url('mahasiswa/daftar-barang.php?jenis=temuan')) ?>"
+            class="text-xs font-semibold hover:text-tt-orange">
+            Lihat Semua &gt;&gt;
+        </a>
     </div>
 
     <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
-        <?php foreach ($barangTemuan as $barang): ?>
-            <div class="rounded-xl border border-indigo-200 bg-white p-4">
-                <img src="<?= base_url('assets/images/foto-barang.png') ?>" alt="<?= h($barang['nama']) ?>" class="h-48 w-full rounded-lg object-cover">
-                <h3 class="mt-4 font-display text-lg font-semibold"><?= h($barang['nama']) ?></h3>
-                <p class="text-sm"><?= h($barang['deskripsi']) ?></p>
-                <p class="mt-3 text-sm"><?= h($barang['lokasi']) ?></p>
-                <p class="mt-3 text-sm"><?= h($barang['waktu']) ?></p>
-                <!-- Laporan sendiri → Detail Barang, laporan orang lain → Detail Klaim -->
-                <?php if ($barang['milik_saya']): ?>
-                    <a href="<?= base_url('mahasiswa/laporan/detail.php') ?>" class="mt-6 inline-block text-sm font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
-                <?php else: ?>
-                    <a href="<?= base_url('mahasiswa/klaim/detail.php') ?>" class="mt-6 inline-block text-sm font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
-                <?php endif; ?>
+
+        <?php if ($barangTemuan === []): ?>
+
+            <div class="col-span-full rounded-xl border border-indigo-200 bg-white p-8 text-center">
+                <h3 class="font-display text-lg font-semibold">
+                    Belum Ada Barang Temuan
+                </h3>
+                <p class="mt-2 text-sm text-gray-500">
+                    Barang temuan yang telah disetujui akan muncul di sini.
+                </p>
             </div>
-        <?php endforeach; ?>
+
+        <?php else: ?>
+
+            <?php foreach ($barangTemuan as $barang): ?>
+
+                <?php
+                $idBarang = (int) $barang['id_pengumuman'];
+
+                $detailUrl = $barang['milik_saya']
+                    ? base_url('mahasiswa/laporan/detail.php?id=' . $idBarang)
+                    : base_url('mahasiswa/klaim/detail.php?id=' . $idBarang);
+                ?>
+
+                <div class="rounded-xl border border-indigo-200 bg-white p-4">
+
+                    <!-- Foto akan dihubungkan melalui signed URL Storage. -->
+                    <div class="flex h-48 w-full items-center justify-center rounded-lg bg-slate-100 text-sm text-slate-500">
+                        Foto belum dapat ditampilkan
+                    </div>
+
+                    <h3 class="mt-4 font-display text-lg font-semibold">
+                        <?= h($barang['judul']) ?>
+                    </h3>
+
+                    <p class="text-sm">
+                        <?= h($barang['deskripsi']) ?>
+                    </p>
+
+                    <p class="mt-3 text-sm">
+                        <?= h($barang['nama_kategori']) ?>
+                    </p>
+
+                    <p class="mt-2 text-sm">
+                        <?= h($barang['lokasi_kejadian']) ?>
+                    </p>
+
+                    <p class="mt-2 text-xs text-gray-500">
+                        <?= h(format_date_time($barang['tanggal_waktu_kejadian'])) ?>
+                    </p>
+
+                    <a
+                        href="<?= h($detailUrl) ?>"
+                        class="mt-6 inline-block text-sm font-semibold hover:text-tt-orange">
+                        Lihat Detail &rarr;
+                    </a>
+
+                </div>
+
+            <?php endforeach; ?>
+
+        <?php endif; ?>
+
     </div>
+
+
+    <!-- Barang kehilangan terbaru -->
 
     <!-- Barang kehilangan terbaru -->
     <div class="mt-12 flex items-end justify-between">
         <div>
-            <h2 class="font-display text-xl font-semibold">Barang Kehilangan Terbaru</h2>
-            <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <h2 class="font-display text-xl font-semibold">
+                Barang Kehilangan Terbaru
+            </h2>
+            <p class="mt-2 text-xs">
+                Daftar laporan kehilangan yang telah disetujui.
+            </p>
         </div>
-        <a href="<?= base_url('mahasiswa/daftar-barang.php') ?>" class="text-xs font-semibold hover:text-tt-orange">Lihat Semua &gt;&gt;</a>
+
+        <a
+            href="<?= h(base_url('mahasiswa/daftar-barang.php?jenis=hilang')) ?>"
+            class="text-xs font-semibold hover:text-tt-orange">
+            Lihat Semua &gt;&gt;
+        </a>
     </div>
 
     <div class="mt-4 overflow-x-auto rounded-xl border border-indigo-200 bg-white">
+
         <table class="w-full text-left text-sm">
             <thead class="bg-tt-tablehead font-display text-base">
                 <tr>
@@ -135,31 +215,77 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                     <th class="px-6 py-5 font-semibold">Aksi</th>
                 </tr>
             </thead>
+
             <tbody>
-                <?php foreach ($barangHilang as $barang): ?>
-                    <tr class="border-t border-indigo-100">
-                        <td class="px-6 py-4"><?= h($barang['nama']) ?></td>
-                        <td class="px-6 py-4">
-                            <span class="rounded-full bg-purple-100 px-2 py-1 text-xs font-semibold text-purple-600"><?= h($barang['kategori']) ?></span>
-                        </td>
-                        <td class="px-6 py-4"><?= h($barang['lokasi']) ?></td>
-                        <td class="px-6 py-4"><?= h($barang['waktu']) ?></td>
-                        <td class="px-6 py-4">
-                            <span class="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700"><?= h($barang['status']) ?></span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <!-- Laporan sendiri → Detail Barang, laporan orang lain → Detail Klaim -->
-                            <?php if ($barang['milik_saya']): ?>
-                                <a href="<?= base_url('mahasiswa/laporan/detail.php') ?>" class="font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
-                            <?php else: ?>
-                                <a href="<?= base_url('mahasiswa/klaim/detail.php') ?>" class="font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
-                            <?php endif; ?>
+
+                <?php if ($barangHilang === []): ?>
+
+                    <tr>
+                        <td colspan="6" class="px-6 py-10 text-center text-gray-500">
+                            Belum ada laporan kehilangan yang tersedia.
                         </td>
                     </tr>
-                <?php endforeach; ?>
+
+                <?php else: ?>
+
+                    <?php foreach ($barangHilang as $barang): ?>
+
+                        <?php
+                        $idBarang = (int) $barang['id_pengumuman'];
+
+                        $detailUrl = $barang['milik_saya']
+                            ? base_url('mahasiswa/laporan/detail.php?id=' . $idBarang)
+                            : base_url('Detail-Kehilangan.php?id=' . $idBarang);
+
+                        $statusText = $statusLabels[$barang['status']]
+                            ?? ucfirst($barang['status']);
+                        ?>
+
+                        <tr class="border-t border-indigo-100">
+
+                            <td class="px-6 py-4">
+                                <?= h($barang['judul']) ?>
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <span class="rounded-full bg-purple-100 px-2 py-1 text-xs font-semibold text-purple-600">
+                                    <?= h($barang['nama_kategori']) ?>
+                                </span>
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <?= h($barang['lokasi_kejadian']) ?>
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <?= h(format_date_time($barang['tanggal_waktu_kejadian'])) ?>
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <span class="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
+                                    <?= h($statusText) ?>
+                                </span>
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <a
+                                    href="<?= h($detailUrl) ?>"
+                                    class="font-semibold hover:text-tt-orange">
+                                    Lihat Detail &rarr;
+                                </a>
+                            </td>
+
+                        </tr>
+
+                    <?php endforeach; ?>
+
+                <?php endif; ?>
+
             </tbody>
         </table>
+
     </div>
+
 
     <!-- Cara menggunakan -->
     <div class="mt-12 text-center">

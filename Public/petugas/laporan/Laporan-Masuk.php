@@ -1,6 +1,37 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+declare(strict_types=1);
+
+require_once dirname(__DIR__, 2) . '/App/config/bootstrap.php';
+require_once APP_ROOT . '/App/config/database.php';
+require_once APP_ROOT . '/App/helpers/auth.php';
+require_once APP_ROOT . '/App/queries/petugas_dashboard_queries.php';
+
+$currentUser = auth_require_role(['petugas']);
+
+$dashboardError = null;
+
+$dashboardData = [
+    'stats' => [
+        'pending_reports' => 0,
+        'pending_claims' => 0,
+        'active_students' => 0,
+    ],
+    'reports' => [],
+    'recent_students' => [],
+];
+
+try {
+    $dashboardData = get_petugas_dashboard_data();
+    $databaseAvailable = true;
+} catch (Throwable $error) {
+    error_log('Gagal memuat data dashboard: ' . $error->getMessage());
+    $dashboardError = 'Gagal memuat data dashboard. Silakan coba lagi nanti.';
+}
+
+$stats = $dashboardData['stats'];
+$reports = $dashboardData['reports'];
+$recentStudents = $dashboardData['recent_students'];
+
 ?>
 
 <!DOCTYPE html>

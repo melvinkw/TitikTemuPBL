@@ -4,6 +4,9 @@
  * Halaman Kecocokan Laporan (Figma: Admin-Kecocokan).
  */
 require_once __DIR__ . '/../../../App/config/bootstrap.php';
+require_once APP_ROOT . '/App/helpers/auth.php';
+
+$currentUser = auth_require_role(['admin']);
 
 $pageTitle = 'Kecocokan Laporan';
 $menuAktif = 'kecocokan';

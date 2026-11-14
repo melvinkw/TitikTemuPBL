@@ -30,7 +30,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 
         $errorMessage = (string) ($result['message'] ?? 'Login gagal. Periksa kembali data Anda.');
     } catch (Throwable $error) {
-        // Jangan mencatat input login, password, cookie, atau response SIAKAD.
         error_log('[TitikTemu] Authentication process failed: ' . get_class($error));
         $errorMessage = 'Login belum dapat diproses. Periksa koneksi lalu coba lagi.';
     }
