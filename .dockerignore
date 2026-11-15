@@ -1,0 +1,13 @@
+
+.git
+.github
+
+.env
+.env.*
+
+vendor/
+node_modules/
+
+storage/siakad-debug/
+storage/logs/
+*.log
