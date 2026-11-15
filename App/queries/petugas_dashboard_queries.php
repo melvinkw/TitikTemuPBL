@@ -36,7 +36,8 @@ function get_petugas_dashboard_data(): array
             p.judul,
             u.nama AS pelapor,
             p.lokasi_kejadian AS lokasi,
-            p.created_at
+            p.created_at,
+            p.id_pengumuman
         FROM pengumuman AS p
         INNER JOIN pengguna AS u
             ON u.id_pengguna = p.id_pengguna
