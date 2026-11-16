@@ -11,7 +11,7 @@
 $menuAktif = $menuAktif ?? '';
 ?>
 <nav class="flex items-center justify-end border-b border-indigo-200 px-4 py-6 md:px-20">
-    <div class="flex items-center gap-6 text-sm font-semibold md:gap-10">
+    <div class="flex items-center gap-3 text-xs font-semibold whitespace-nowrap min-[360px]:gap-4 min-[360px]:text-sm sm:gap-6 md:gap-10">
         <a href="<?= base_url('index.php') ?>"
             class="<?= $menuAktif === 'beranda' ? 'font-extrabold text-tt-orange' : 'text-tt-navy hover:text-tt-orange' ?>">
             Beranda
