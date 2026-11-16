@@ -31,7 +31,7 @@ $linkTutup    = $linkTutup ?? '#';
         <!-- Judul -->
         <div class="p-4">
             <h2 class="font-display text-xl font-semibold">Laporan Kehilangan / Penemuan Barang</h2>
-            <p class="mt-3 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <p class="mt-3 text-xs">Isi data barang selengkap mungkin. Laporan akan diperiksa petugas sebelum ditampilkan di daftar barang.</p>
         </div>
 
         <!-- Jenis laporan (dropdown) -->
