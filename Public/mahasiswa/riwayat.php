@@ -54,20 +54,20 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
         <p class="mt-2 text-xs"><?= h($section['description']) ?></p>
 
         <div class="mt-6 overflow-x-auto rounded-xl border border-indigo-200 bg-white">
-            <table class="w-full text-left text-sm">
+            <table class="w-full min-w-180 text-left text-sm">
                 <thead class="bg-tt-tablehead font-display text-base">
                     <tr>
-                        <th class="px-6 py-5 font-semibold">Nama Barang</th>
-                        <th class="px-6 py-5 font-semibold">Kategori</th>
-                        <th class="px-6 py-5 font-semibold">Lokasi</th>
-                        <th class="px-6 py-5 font-semibold">Tanggal &amp; Waktu</th>
-                        <th class="px-6 py-5 font-semibold">Status</th>
-                        <th class="px-6 py-5 font-semibold">Aksi</th>
+                        <th class="px-6 py-5 font-semibold whitespace-nowrap">Nama Barang</th>
+                        <th class="px-6 py-5 font-semibold whitespace-nowrap">Kategori</th>
+                        <th class="px-6 py-5 font-semibold whitespace-nowrap">Lokasi</th>
+                        <th class="px-6 py-5 font-semibold whitespace-nowrap">Tanggal &amp; Waktu</th>
+                        <th class="px-6 py-5 font-semibold whitespace-nowrap">Status</th>
+                        <th class="px-6 py-5 font-semibold whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if ($riwayat[$jenis] === []): ?>
-                        <tr><td colspan="6" class="px-6 py-6 text-center text-gray-500">Belum ada laporan.</td></tr>
+                        <tr><td colspan="6" class="px-6 py-6 text-left text-gray-500 md:text-center">Belum ada laporan.</td></tr>
                     <?php else: ?>
                         <?php foreach ($riwayat[$jenis] as $laporan): ?>
                             <tr class="border-t border-indigo-100">
@@ -92,20 +92,20 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
     <p class="mt-2 text-xs">Daftar klaim barang yang pernah kamu ajukan.</p>
 
     <div class="mt-6 overflow-x-auto rounded-xl border border-indigo-200 bg-white">
-        <table class="w-full text-left text-sm">
+        <table class="w-full min-w-180 text-left text-sm">
             <thead class="bg-tt-tablehead font-display text-base">
                 <tr>
-                    <th class="px-6 py-5 font-semibold">Nama Barang</th>
-                    <th class="px-6 py-5 font-semibold">Pemohon</th>
-                    <th class="px-6 py-5 font-semibold">Bukti Kepemilikan</th>
-                    <th class="px-6 py-5 font-semibold">Tanggal Pengajuan</th>
-                    <th class="px-6 py-5 font-semibold">Status</th>
-                    <th class="px-6 py-5 font-semibold">Catatan</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Nama Barang</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Pemohon</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Bukti Kepemilikan</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Tanggal Pengajuan</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Status</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Catatan</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if ($riwayat['klaim'] === []): ?>
-                    <tr><td colspan="6" class="px-6 py-6 text-center text-gray-500">Belum ada klaim.</td></tr>
+                    <tr><td colspan="6" class="px-6 py-6 text-left text-gray-500 md:text-center">Belum ada klaim.</td></tr>
                 <?php else: ?>
                     <?php foreach ($riwayat['klaim'] as $klaim): ?>
                         <tr class="border-t border-indigo-100">

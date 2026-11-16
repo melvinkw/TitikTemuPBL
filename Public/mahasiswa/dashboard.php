@@ -50,7 +50,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 
     <!-- Sapaan -->
     <h1 class="font-display text-2xl font-bold">Halo, <?= h($namaUser) ?>! 👋</h1>
-    <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <p class="mt-2 text-xs">Pantau laporanmu dan cari barang yang hilang atau ditemukan di sekitar kampus.</p>
 
     <!-- Banner -->
     <div class="mt-6 rounded-xl border border-indigo-200 bg-white p-6">
@@ -204,15 +204,15 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 
     <div class="mt-4 overflow-x-auto rounded-xl border border-indigo-200 bg-white">
 
-        <table class="w-full text-left text-sm">
+        <table class="w-full min-w-180 text-left text-sm">
             <thead class="bg-tt-tablehead font-display text-base">
                 <tr>
-                    <th class="px-6 py-5 font-semibold">Nama Barang</th>
-                    <th class="px-6 py-5 font-semibold">Kategori</th>
-                    <th class="px-6 py-5 font-semibold">Lokasi</th>
-                    <th class="px-6 py-5 font-semibold">Tanggal &amp; Waktu</th>
-                    <th class="px-6 py-5 font-semibold">Status</th>
-                    <th class="px-6 py-5 font-semibold">Aksi</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Nama Barang</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Kategori</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Lokasi</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Tanggal &amp; Waktu</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Status</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Aksi</th>
                 </tr>
             </thead>
 
@@ -221,7 +221,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                 <?php if ($barangHilang === []): ?>
 
                     <tr>
-                        <td colspan="6" class="px-6 py-10 text-center text-gray-500">
+                        <td colspan="6" class="px-6 py-10 text-left text-gray-500 md:text-center">
                             Belum ada laporan kehilangan yang tersedia.
                         </td>
                     </tr>
@@ -291,7 +291,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
     <div class="mt-12 text-center">
         <p class="text-xs font-semibold">MUDAH DAN TERARAH</p>
         <h2 class="mt-2 font-display text-3xl font-bold">Bagaimana cara menggunakan TitikTemu?</h2>
-        <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <p class="mt-2 text-xs">Tiga langkah sederhana dari melapor sampai barangmu kembali.</p>
     </div>
 
     <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -304,7 +304,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                 </svg>
             </div>
             <h3 class="mt-3 font-display text-lg font-semibold">1. Laporkan</h3>
-            <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p class="mt-2 text-xs">Laporkan barang yang hilang atau yang kamu temukan, lengkap dengan foto, lokasi, dan waktu kejadian.</p>
         </div>
         <div class="rounded-xl border border-indigo-200 bg-white p-8">
             <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-tt-navy text-white">
@@ -315,7 +315,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                 </svg>
             </div>
             <h3 class="mt-3 font-display text-lg font-semibold">2. Diperiksa</h3>
-            <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p class="mt-2 text-xs">Petugas memeriksa laporanmu. Laporan yang disetujui akan tampil di daftar barang.</p>
         </div>
         <div class="rounded-xl border border-indigo-200 bg-white p-8">
             <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-tt-navy text-white">
@@ -326,7 +326,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                 </svg>
             </div>
             <h3 class="mt-3 font-display text-lg font-semibold">3. Verifikasi</h3>
-            <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p class="mt-2 text-xs">Ajukan klaim dengan bukti kepemilikan. Setelah diverifikasi petugas, ambil barangmu di pos penyerahan.</p>
         </div>
     </div>
 
@@ -335,7 +335,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
         <div>
             <p class="text-xs font-semibold">MULAI SEKARANG</p>
             <h2 class="mt-2 font-display text-3xl font-bold">Barangmu bisa ditemukan kembali.</h2>
-            <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+            <p class="mt-2 text-xs">Buat laporan sekarang supaya petugas bisa segera memeriksanya.</p>
         </div>
         <a href="?modal=hilang" class="rounded-lg bg-tt-navy px-3 py-3 text-xs font-semibold text-white hover:bg-tt-orange hover:text-tt-navy">+ Buat Laporan</a>
     </div>

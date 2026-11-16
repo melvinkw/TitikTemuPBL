@@ -38,9 +38,9 @@ $warnaKategori = [
 
 // Langkah cara menggunakan TitikTemu
 $langkah = [
-    ['judul' => '1. Laporkan', 'teks' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'],
-    ['judul' => '2. Diperiksa', 'teks' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'],
-    ['judul' => '3. Verifikasi', 'teks' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'],
+    ['judul' => '1. Laporkan', 'teks' => 'Laporkan barang yang hilang atau yang kamu temukan, lengkap dengan foto, lokasi, dan waktu kejadian.'],
+    ['judul' => '2. Diperiksa', 'teks' => 'Petugas memeriksa laporanmu. Laporan yang disetujui akan tampil di daftar barang.'],
+    ['judul' => '3. Verifikasi', 'teks' => 'Ajukan klaim dengan bukti kepemilikan. Setelah diverifikasi petugas, ambil barangmu di pos penyerahan.'],
 ];
 
 require_once APP_ROOT . '/App/views/components/header.php';
@@ -77,7 +77,7 @@ require_once APP_ROOT . '/App/views/components/public/navbar.php';
     <div class="mt-12 flex items-end justify-between">
         <div>
             <h2 class="font-display text-xl font-semibold">Barang Temuan Terbaru</h2>
-            <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p class="mt-2 text-xs">Barang temuan yang telah disetujui dan tersedia.</p>
         </div>
         <a href="<?= base_url('daftar-barang.php') ?>" class="text-xs font-semibold hover:text-tt-orange">Lihat Semua &gt;&gt;</a>
     </div>
@@ -99,21 +99,21 @@ require_once APP_ROOT . '/App/views/components/public/navbar.php';
     <div class="mt-12 flex items-end justify-between">
         <div>
             <h2 class="font-display text-xl font-semibold">Barang Kehilangan Terbaru</h2>
-            <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p class="mt-2 text-xs">Daftar laporan kehilangan yang telah disetujui.</p>
         </div>
         <a href="<?= base_url('daftar-barang.php') ?>" class="text-xs font-semibold hover:text-tt-orange">Lihat Semua &gt;&gt;</a>
     </div>
 
     <div class="mt-4 overflow-x-auto rounded-xl border border-indigo-200 bg-white">
-        <table class="w-full text-left text-sm">
+        <table class="w-full min-w-180 text-left text-sm">
             <thead class="bg-tt-tablehead font-display text-base">
                 <tr>
-                    <th class="px-6 py-5 font-semibold">Nama Barang</th>
-                    <th class="px-6 py-5 font-semibold">Kategori</th>
-                    <th class="px-6 py-5 font-semibold">Lokasi Kehilangan</th>
-                    <th class="px-6 py-5 font-semibold">Tanggal &amp; Waktu</th>
-                    <th class="px-6 py-5 font-semibold">Status</th>
-                    <th class="px-6 py-5 font-semibold">Aksi</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Nama Barang</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Kategori</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Lokasi Kehilangan</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Tanggal &amp; Waktu</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Status</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -141,7 +141,7 @@ require_once APP_ROOT . '/App/views/components/public/navbar.php';
     <div class="mt-12 text-center">
         <p class="text-xs font-semibold">MUDAH DAN TERARAH</p>
         <h2 class="mt-2 font-display text-3xl font-bold">Bagaimana cara menggunakan TitikTemu?</h2>
-        <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <p class="mt-2 text-xs">Tiga langkah sederhana dari melapor sampai barangmu kembali.</p>
     </div>
 
     <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -161,7 +161,7 @@ require_once APP_ROOT . '/App/views/components/public/navbar.php';
         <div>
             <p class="text-xs font-semibold">MULAI SEKARANG</p>
             <h2 class="mt-2 font-display text-3xl font-bold">Barangmu bisa ditemukan kembali.</h2>
-            <p class="mt-2 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <p class="mt-2 text-xs">Masuk dengan NIM atau username untuk melaporkan barang hilang atau barang yang kamu temukan.</p>
         </div>
         <a href="<?= base_url('login.php') ?>" class="shrink-0 self-start rounded-lg bg-tt-navy px-4 py-3 text-xs font-semibold text-white hover:bg-tt-orange hover:text-tt-navy md:self-auto">Login untuk melapor &rarr;</a>
     </div>

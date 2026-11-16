@@ -48,7 +48,7 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
     <div class="flex flex-col gap-2 p-4">
         <p class="text-sm font-semibold">RUANG KERJA ADMINISTRATOR</p>
         <h1 class="font-display text-[32px] font-extrabold">Detail Laporan</h1>
-        <p class="text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <p class="text-xs">Periksa data dan foto barang, lalu tetapkan apakah laporan ini disetujui atau ditolak.</p>
     </div>
 
     <div class="grid grid-cols-1 items-start gap-9 lg:grid-cols-2">
@@ -83,7 +83,7 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
 
                     <div class="flex flex-col gap-2 p-4">
                         <h3 class="font-display text-xl font-semibold">Pemeriksaan Petugas / Admin</h3>
-                        <p class="text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+                        <p class="text-xs">Pilih keputusan dan tambahkan catatan bila perlu. Keputusan akan tercatat di riwayat status laporan.</p>
                     </div>
 
                     <label class="flex flex-col gap-2">
@@ -130,13 +130,13 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
         <h2 class="p-4 font-display text-xl font-semibold">Riwayat Status Laporan</h2>
 
         <div class="overflow-x-auto rounded-[15px] border border-tt-outline bg-white">
-            <table class="w-full text-left text-sm">
+            <table class="w-full min-w-160 text-left text-sm">
                 <thead class="bg-tt-tablehead font-display text-xl">
                     <tr>
-                        <th class="px-7.5 py-8 font-semibold">Waktu</th>
-                        <th class="px-7.5 py-8 font-semibold">Perubahan</th>
-                        <th class="px-7.5 py-8 font-semibold">Diubah Oleh</th>
-                        <th class="px-7.5 py-8 font-semibold">Catatan</th>
+                        <th class="px-7.5 py-8 font-semibold whitespace-nowrap">Waktu</th>
+                        <th class="px-7.5 py-8 font-semibold whitespace-nowrap">Perubahan</th>
+                        <th class="px-7.5 py-8 font-semibold whitespace-nowrap">Diubah Oleh</th>
+                        <th class="px-7.5 py-8 font-semibold whitespace-nowrap">Catatan</th>
                     </tr>
                 </thead>
                 <tbody>
