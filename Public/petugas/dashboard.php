@@ -37,6 +37,7 @@ $recentStudents = $dashboardData['recent_students'];
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -99,7 +100,7 @@ $recentStudents = $dashboardData['recent_students'];
 
             </div>
 
-             <?php if ($dashboardError !== null): ?>
+            <?php if ($dashboardError !== null): ?>
                 <div role="alert" class="mx-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
                     <?= h($dashboardError) ?>
                 </div>
@@ -123,7 +124,7 @@ $recentStudents = $dashboardData['recent_students'];
                 <article class="rounded-2xl border border-tt-outline bg-white p-6 shadow-sm">
 
                     <p class="font-display text-3xl font-bold">
-                       <?= number_format((int) $stats['pending_claims'], 0, ',', '.') ?>
+                        <?= number_format((int) $stats['pending_claims'], 0, ',', '.') ?>
                     </p>
 
                     <p class="mt-2 text-base leading-snug">
@@ -160,7 +161,7 @@ $recentStudents = $dashboardData['recent_students'];
                         Laporan yang Perlu Diperiksa
                     </h2>
 
-                    <a href="<?= h(base_url('petugas/laporan/')) ?>" class="rounded-lg px-3 py-2 text-sm font-semibold transition hover:bg-white/60">
+                    <a href="<?= h(base_url('petugas/laporan/Laporan-Masuk.php')) ?>" class="rounded-lg px-3 py-2 text-sm font-semibold transition hover:bg-white/60">
 
                         Lihat Semua &gt;&gt;
 
@@ -232,7 +233,7 @@ $recentStudents = $dashboardData['recent_students'];
 
                                             <td class="px-5 py-4 text-center">
 
-                                                <a href="<?= h(base_url('petugas/laporan/')) ?>" class="inline-flex min-h-10 items-center justify-center rounded-[10px] bg-tt-navy px-4 py-2 text-sm font-semibold text-white transition hover:bg-tt-navy/90">
+                                                <a href="<?= h(base_url('petugas/laporan/Detail-Laporan.php?id=' . (int)$report['id_pengumuman'])) ?>" class="inline-flex min-h-10 items-center justify-center rounded-[10px] bg-tt-navy px-4 py-2 text-sm font-semibold text-white transition hover:bg-tt-navy/90">
 
                                                     Periksa
 
