@@ -105,15 +105,15 @@ require_once APP_ROOT . '/App/views/components/public/navbar.php';
     </div>
 
     <div class="mt-4 overflow-x-auto rounded-xl border border-indigo-200 bg-white">
-        <table class="w-full text-left text-sm">
+        <table class="w-full min-w-180 text-left text-sm">
             <thead class="bg-tt-tablehead font-display text-base">
                 <tr>
-                    <th class="px-6 py-5 font-semibold">Nama Barang</th>
-                    <th class="px-6 py-5 font-semibold">Kategori</th>
-                    <th class="px-6 py-5 font-semibold">Lokasi Kehilangan</th>
-                    <th class="px-6 py-5 font-semibold">Tanggal &amp; Waktu</th>
-                    <th class="px-6 py-5 font-semibold">Status</th>
-                    <th class="px-6 py-5 font-semibold">Aksi</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Nama Barang</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Kategori</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Lokasi Kehilangan</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Tanggal &amp; Waktu</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Status</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Aksi</th>
                 </tr>
             </thead>
             <tbody>

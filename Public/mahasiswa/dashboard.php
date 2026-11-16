@@ -204,15 +204,15 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 
     <div class="mt-4 overflow-x-auto rounded-xl border border-indigo-200 bg-white">
 
-        <table class="w-full text-left text-sm">
+        <table class="w-full min-w-180 text-left text-sm">
             <thead class="bg-tt-tablehead font-display text-base">
                 <tr>
-                    <th class="px-6 py-5 font-semibold">Nama Barang</th>
-                    <th class="px-6 py-5 font-semibold">Kategori</th>
-                    <th class="px-6 py-5 font-semibold">Lokasi</th>
-                    <th class="px-6 py-5 font-semibold">Tanggal &amp; Waktu</th>
-                    <th class="px-6 py-5 font-semibold">Status</th>
-                    <th class="px-6 py-5 font-semibold">Aksi</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Nama Barang</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Kategori</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Lokasi</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Tanggal &amp; Waktu</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Status</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Aksi</th>
                 </tr>
             </thead>
 
@@ -221,7 +221,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                 <?php if ($barangHilang === []): ?>
 
                     <tr>
-                        <td colspan="6" class="px-6 py-10 text-center text-gray-500">
+                        <td colspan="6" class="px-6 py-10 text-left text-gray-500 md:text-center">
                             Belum ada laporan kehilangan yang tersedia.
                         </td>
                     </tr>

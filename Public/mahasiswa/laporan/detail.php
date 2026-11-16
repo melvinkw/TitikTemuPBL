@@ -68,13 +68,13 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
     <h2 class="mt-12 font-display text-lg font-semibold">Riwayat Status Laporan</h2>
 
     <div class="mt-6 overflow-x-auto rounded-xl border border-indigo-200 bg-white">
-        <table class="w-full text-left text-sm">
+        <table class="w-full min-w-160 text-left text-sm">
             <thead class="bg-tt-tablehead font-display text-base">
                 <tr>
-                    <th class="px-6 py-5 font-semibold">Waktu</th>
-                    <th class="px-6 py-5 font-semibold">Perubahan</th>
-                    <th class="px-6 py-5 font-semibold">Diubah Oleh</th>
-                    <th class="px-6 py-5 font-semibold">Catatan</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Waktu</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Perubahan</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Diubah Oleh</th>
+                    <th class="px-6 py-5 font-semibold whitespace-nowrap">Catatan</th>
                 </tr>
             </thead>
             <tbody>
