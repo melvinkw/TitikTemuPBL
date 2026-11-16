@@ -12,6 +12,7 @@ RUN npm ci
 
 COPY resources/ ./resources/
 COPY Public/ ./Public/
+COPY App/ ./App/
 
 RUN mkdir -p Public/assets/css && npm run build
 
