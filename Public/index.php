@@ -50,7 +50,7 @@ require_once APP_ROOT . '/App/views/components/public/navbar.php';
 <main class="w-full px-4 py-8 md:px-20">
 
     <!-- Banner -->
-    <div class="rounded-xl border border-indigo-200 bg-white p-6">
+    <div class="rounded-2xl border border-tt-outline bg-white p-6">
         <div class="flex flex-col items-center gap-6 md:flex-row">
             <div class="flex-1">
                 <p class="text-xs font-semibold">LOST &amp; FOUND POLINEMA</p>
@@ -69,7 +69,7 @@ require_once APP_ROOT . '/App/views/components/public/navbar.php';
         <div class="mt-6 flex gap-2">
             <!-- Buat laporan wajib login dulu -->
             <a href="<?= base_url('login.php') ?>" class="rounded-lg bg-tt-navy px-3 py-3 text-xs font-semibold text-white hover:bg-tt-orange hover:text-tt-navy">+ Buat Laporan</a>
-            <a href="<?= base_url('daftar-barang.php') ?>" class="rounded-lg border border-tt-navy px-3 py-3 text-xs font-semibold hover:bg-indigo-100">Cari Barang &gt;&gt;</a>
+            <a href="<?= base_url('daftar-barang.php') ?>" class="rounded-lg border border-tt-navy px-3 py-3 text-xs font-semibold hover:bg-tt-primary">Cari Barang &gt;&gt;</a>
         </div>
     </div>
 
@@ -84,7 +84,7 @@ require_once APP_ROOT . '/App/views/components/public/navbar.php';
 
     <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
         <?php foreach ($barangTemuan as $barang): ?>
-            <div class="rounded-xl border border-indigo-200 bg-white p-4">
+            <div class="rounded-2xl border border-tt-outline bg-white p-4">
                 <img src="<?= base_url('assets/images/foto-barang.png') ?>" alt="<?= h($barang['nama']) ?>" class="h-48 w-full rounded-lg object-cover">
                 <h3 class="mt-4 font-display text-lg font-semibold"><?= h($barang['nama']) ?></h3>
                 <p class="text-sm"><?= h($barang['deskripsi']) ?></p>
@@ -104,7 +104,7 @@ require_once APP_ROOT . '/App/views/components/public/navbar.php';
         <a href="<?= base_url('daftar-barang.php') ?>" class="text-xs font-semibold hover:text-tt-orange">Lihat Semua &gt;&gt;</a>
     </div>
 
-    <div class="mt-4 overflow-x-auto rounded-xl border border-indigo-200 bg-white">
+    <div class="mt-4 overflow-x-auto rounded-2xl border border-tt-outline bg-white">
         <table class="w-full min-w-180 text-left text-sm">
             <thead class="bg-tt-tablehead font-display text-base">
                 <tr>
@@ -118,7 +118,7 @@ require_once APP_ROOT . '/App/views/components/public/navbar.php';
             </thead>
             <tbody>
                 <?php foreach ($barangHilang as $barang): ?>
-                    <tr class="border-t border-indigo-100">
+                    <tr class="border-t border-tt-outline">
                         <td class="px-6 py-4"><?= h($barang['nama']) ?></td>
                         <td class="px-6 py-4">
                             <span class="rounded-full px-2 py-1 text-xs font-semibold <?= $warnaKategori[$barang['kategori']] ?? 'bg-gray-100 text-gray-600' ?>"><?= h($barang['kategori']) ?></span>
@@ -146,7 +146,7 @@ require_once APP_ROOT . '/App/views/components/public/navbar.php';
 
     <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
         <?php foreach ($langkah as $item): ?>
-            <div class="rounded-xl border border-indigo-200 bg-white p-8">
+            <div class="rounded-2xl border border-tt-outline bg-white p-8">
                 <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-tt-navy">
                     <img src="<?= base_url('assets/images/icon-centang.svg') ?>" alt="" class="h-5 w-5">
                 </div>
@@ -157,7 +157,7 @@ require_once APP_ROOT . '/App/views/components/public/navbar.php';
     </div>
 
     <!-- Ajakan login -->
-    <div class="mt-12 mb-8 flex flex-col gap-6 rounded-xl border border-indigo-200 bg-white p-8 md:flex-row md:items-end md:justify-between">
+    <div class="mt-12 mb-8 flex flex-col gap-6 rounded-2xl border border-tt-outline bg-white p-8 md:flex-row md:items-end md:justify-between">
         <div>
             <p class="text-xs font-semibold">MULAI SEKARANG</p>
             <h2 class="mt-2 font-display text-3xl font-bold">Barangmu bisa ditemukan kembali.</h2>

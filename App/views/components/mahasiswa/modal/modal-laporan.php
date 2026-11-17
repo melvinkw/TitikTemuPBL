@@ -191,7 +191,7 @@ $linkTutup    = $linkTutup ?? '#';
 
             <a
                 href="<?= h($linkTutup) ?>"
-                class="flex h-[43px] items-center rounded-[10px] border border-tt-navy px-[11px] text-sm font-semibold hover:bg-indigo-100">
+                class="flex h-[43px] items-center rounded-[10px] border border-tt-navy px-[11px] text-sm font-semibold hover:bg-tt-primary">
                 Batal
             </a>
         </div> <!-- Penutup area tombol -->
