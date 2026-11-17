@@ -26,3 +26,41 @@ html {
 body {
     margin: 0;
 }
+
+/*
+ * Class bersama TitikTemu
+ * Dipakai supaya kartu, tombol, input, dan label terlihat sama di semua halaman.
+ * Contoh: <button class="tt-btn">Simpan</button>
+ *         <input class="tt-input" type="text">
+ */
+@layer components {
+    /* Kartu putih bergaris (Figma: sudut 16px, garis outline) */
+    .tt-card {
+        @apply rounded-2xl border border-tt-outline bg-white;
+    }
+
+    /* Tombol utama (biru tua) */
+    .tt-btn {
+        @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-tt-navy px-4 py-3 text-sm font-semibold text-white hover:bg-tt-orange hover:text-tt-navy disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    /* Tombol kedua (garis biru tua, latar putih) */
+    .tt-btn-outline {
+        @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-tt-navy bg-white px-4 py-3 text-sm font-semibold text-tt-navy hover:bg-tt-primary;
+    }
+
+    /* Input, select, dan textarea */
+    .tt-input {
+        @apply w-full rounded-[10px] border border-tt-outline bg-white p-3 text-sm text-tt-navy outline-none placeholder:text-tt-outline focus:border-tt-navy;
+    }
+
+    /* Label di atas input */
+    .tt-label {
+        @apply mb-2 block font-display text-base font-semibold;
+    }
+
+    /* Label kecil berbentuk pil (kategori, status) */
+    .tt-badge {
+        @apply inline-flex w-fit items-center rounded-full px-1.5 py-2.5 text-xs font-semibold whitespace-nowrap;
+    }
+}
