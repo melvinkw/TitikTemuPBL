@@ -2,7 +2,12 @@
 /**
  * Public/admin/kecocokan/kecocokan.php
  * Halaman Kecocokan Laporan (Figma: Admin-Kecocokan).
+ * Admin meninjau pasangan laporan kehilangan dan temuan yang mungkin cocok.
+ * Tombol belum berfungsi dan data masih contoh.
  */
+
+declare(strict_types=1);
+
 require_once __DIR__ . '/../../../App/config/bootstrap.php';
 require_once APP_ROOT . '/App/helpers/auth.php';
 
@@ -10,8 +15,10 @@ $currentUser = auth_require_role(['admin']);
 
 $pageTitle = 'Kecocokan Laporan';
 $menuAktif = 'kecocokan';
+$judulHalaman = 'Kecocokan Laporan';
+$deskripsiHalaman = 'Tinjau pasangan laporan kehilangan dan temuan yang mungkin cocok, lalu kirim email ke pelapor bila sesuai.';
 
-// Data dummy — satu kandidat pasangan (laporan kehilangan + laporan temuan)
+// Data contoh — satu kandidat pasangan (laporan kehilangan + laporan temuan)
 $kandidat = [
     'laporan' => [
         ['nama' => 'Tumbler Hitam', 'deskripsi' => 'Ini tumbler warna hitam pekat', 'lokasi' => 'LPR 8', 'waktu' => '24 Oktober 2026 12:45', 'pelapor' => 'John Doe'],
@@ -40,18 +47,13 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
 <main class="flex w-full flex-col gap-6.5 px-4 pt-2.5 pb-10 md:px-20">
 
     <div class="flex flex-col gap-4">
-        <!-- Judul halaman -->
-        <div class="flex flex-col gap-2 p-4">
-            <p class="text-sm font-semibold">RUANG KERJA ADMINISTRATOR</p>
-            <h1 class="font-display text-[32px] font-extrabold">Kecocokan Laporan</h1>
-            <p class="text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        </div>
+        <?php require APP_ROOT . '/App/views/components/judul-halaman.php'; ?>
 
         <!-- Kotak informasi -->
-        <div class="flex bg-[#fff4ee]">
-            <div class="w-1.5 shrink-0 bg-[#e48f31]"></div>
-            <p class="flex-1 p-4 text-xs text-[#e48f31]">
-                Email dikirim hanya ketika admin memilih “Tandai cocok &amp; kirim email”. Isi email menyatakan kemungkinan kecocokan, bukan kepastian kepemilikan. SMTP dan Composer/PHPMailer harus dikonfigurasi terlebih dahulu agar email benar-benar terkirim.
+        <div class="flex bg-[#FFF4EE]">
+            <div class="w-1.5 shrink-0 bg-[#E48F31]"></div>
+            <p class="flex-1 p-4 text-xs text-[#E48F31]">
+                Email dikirim hanya ketika admin memilih “Tandai Cocok &amp; Kirim Email”. Isi email menyatakan kemungkinan kecocokan, bukan kepastian kepemilikan. SMTP dan Composer/PHPMailer harus dikonfigurasi terlebih dahulu agar email benar-benar terkirim.
             </p>
         </div>
     </div>
@@ -62,9 +64,9 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
             <h2 class="px-4 pb-2 font-display text-xl font-semibold">Kandidat Baru</h2>
 
             <!-- Nomor halaman kandidat (belum berfungsi) -->
-            <div class="flex items-center gap-4 rounded-full bg-white p-1.5">
-                <a href="#" aria-label="Kandidat sebelumnya">
-                    <img src="<?= h(base_url('assets/images/icon-panah-kiri.svg')) ?>" alt="" width="32" height="32">
+            <nav class="flex items-center gap-4 rounded-full bg-white p-1.5" aria-label="Halaman kandidat">
+                <a href="#" class="rounded-full hover:bg-tt-primary" aria-label="Kandidat sebelumnya">
+                    <img src="<?= h(base_url('assets/images/icon-panah-kiri.svg')) ?>" alt="" class="h-8 w-8">
                 </a>
                 <div class="flex items-center gap-1.5 px-2 py-1">
                     <?php foreach ($nomorHalaman as $nomor): ?>
@@ -73,17 +75,17 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
                         </span>
                     <?php endforeach; ?>
                 </div>
-                <a href="#" aria-label="Kandidat berikutnya">
-                    <img src="<?= h(base_url('assets/images/icon-panah-kiri.svg')) ?>" alt="" width="32" height="32" class="rotate-180">
+                <a href="#" class="rounded-full hover:bg-tt-primary" aria-label="Kandidat berikutnya">
+                    <img src="<?= h(base_url('assets/images/icon-panah-kiri.svg')) ?>" alt="" class="h-8 w-8 rotate-180">
                 </a>
-            </div>
+            </nav>
         </div>
 
-        <div class="flex flex-col gap-4 rounded-2xl border border-tt-outline bg-white p-4.5 lg:flex-row">
+        <div class="tt-card flex flex-col gap-4 p-4.5 lg:flex-row">
             <!-- Kiri: dua laporan yang dibandingkan -->
             <div class="flex flex-wrap justify-center gap-1.25 lg:justify-start">
                 <?php foreach ($kandidat['laporan'] as $laporan): ?>
-                    <div class="flex w-74 max-w-full flex-col gap-4.5 rounded-2xl border border-tt-outline bg-white p-4">
+                    <div class="tt-card flex w-74 max-w-full flex-col gap-4.5 p-4">
                         <img src="<?= h(base_url('assets/images/foto-barang.png')) ?>" alt="<?= h($laporan['nama']) ?>"
                              class="h-49 w-full rounded-2xl object-cover">
                         <div class="flex flex-col gap-1.5 px-2.75">
@@ -97,33 +99,32 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
                 <?php endforeach; ?>
             </div>
 
-            <!-- Kanan: poin kecocokan & keputusan admin -->
+            <!-- Kanan: poin kecocokan dan keputusan admin -->
             <form method="post" action="#" class="flex flex-1 flex-col gap-4 p-4">
-                <div class="flex flex-col gap-2">
-                    <p class="font-display text-base font-semibold">Poin Kecocokan</p>
+                <?= csrf_field() ?>
+
+                <div>
+                    <p class="tt-label">Poin Kecocokan</p>
                     <div class="flex flex-wrap gap-2.5">
                         <?php foreach ($kandidat['poin'] as $poin): ?>
-                            <span class="rounded-full border border-tt-navy px-3 py-2.5 text-xs font-semibold"><?= h($poin) ?></span>
+                            <span class="tt-badge border border-tt-navy px-3"><?= h($poin) ?></span>
                         <?php endforeach; ?>
                     </div>
                 </div>
 
-                <div class="flex flex-col items-start gap-2">
-                    <p class="font-display text-base font-semibold">Skor Petunjuk</p>
-                    <span class="rounded-full border border-tt-navy px-3 py-2.5 text-xs font-semibold"><?= h($kandidat['skor']) ?></span>
+                <div>
+                    <p class="tt-label">Skor Petunjuk</p>
+                    <span class="tt-badge border border-tt-navy px-3"><?= h($kandidat['skor']) ?></span>
                 </div>
 
-                <label class="flex flex-col gap-2">
-                    <span class="font-display text-base font-semibold">Catatan Admin (optional)</span>
-                    <textarea name="catatan" rows="4"
-                              class="h-27 w-full resize-none rounded-[10px] border border-tt-outline p-3 text-sm outline-none focus:border-tt-navy"></textarea>
+                <label>
+                    <span class="tt-label">Catatan Admin (opsional)</span>
+                    <textarea name="catatan" rows="4" class="tt-input h-27 resize-none"></textarea>
                 </label>
 
                 <div class="flex flex-wrap gap-2.5 p-2.5">
-                    <button type="submit" name="keputusan" value="cocok"
-                            class="h-10.75 cursor-pointer rounded-[10px] bg-tt-navy px-2.75 text-sm font-semibold text-white">Tandai Cocok &amp; Kirim Email</button>
-                    <button type="submit" name="keputusan" value="tidak-cocok"
-                            class="h-10.75 cursor-pointer rounded-[10px] border border-tt-navy px-2.75 text-sm font-semibold">Tidak Cocok</button>
+                    <button type="submit" name="keputusan" value="cocok" class="tt-btn">Tandai Cocok &amp; Kirim Email</button>
+                    <button type="submit" name="keputusan" value="tidak-cocok" class="tt-btn-outline">Tidak Cocok</button>
                 </div>
             </form>
         </div>
@@ -133,27 +134,27 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
     <section class="mt-2.5 flex flex-col gap-2.5">
         <h2 class="p-4 font-display text-xl font-semibold">Pasangan yang Sudah Ditinjau</h2>
 
-        <div class="overflow-x-auto rounded-[15px] border border-tt-outline bg-white">
-            <table class="w-full min-w-250 text-left text-sm">
-                <thead class="bg-tt-tablehead font-display text-xl">
+        <div class="tt-table-wrap">
+            <table class="tt-table min-w-250">
+                <thead>
                     <tr>
-                        <th class="w-1/6 px-7.5 py-8 font-semibold whitespace-nowrap">Kehilangan</th>
-                        <th class="w-1/6 px-7.5 py-8 font-semibold whitespace-nowrap">Temuan</th>
-                        <th class="w-1/6 px-7.5 py-8 font-semibold whitespace-nowrap">Status</th>
-                        <th class="w-1/6 px-7.5 py-8 font-semibold whitespace-nowrap">Ditinjau Oleh</th>
-                        <th class="w-1/6 px-7.5 py-8 font-semibold whitespace-nowrap">Waktu</th>
-                        <th class="w-1/6 px-7.5 py-8 font-semibold whitespace-nowrap">Catatan</th>
+                        <th class="w-1/6">Kehilangan</th>
+                        <th class="w-1/6">Temuan</th>
+                        <th class="w-1/6">Status</th>
+                        <th class="w-1/6">Ditinjau Oleh</th>
+                        <th class="w-1/6">Waktu</th>
+                        <th class="w-1/6">Catatan</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($sudahDitinjau as $pasangan): ?>
-                        <tr class="border-b border-tt-outline last:border-b-0">
-                            <td class="h-18 px-7.5"><?= h($pasangan['kehilangan']) ?></td>
-                            <td class="h-18 px-7.5"><?= h($pasangan['temuan']) ?></td>
-                            <td class="h-18 px-7.5"><?= h($pasangan['status']) ?></td>
-                            <td class="h-18 px-7.5"><?= h($pasangan['oleh']) ?></td>
-                            <td class="h-18 px-7.5 whitespace-nowrap"><?= h($pasangan['waktu']) ?></td>
-                            <td class="h-18 px-7.5"><?= h($pasangan['catatan']) ?></td>
+                        <tr>
+                            <td><?= h($pasangan['kehilangan']) ?></td>
+                            <td><?= h($pasangan['temuan']) ?></td>
+                            <td><?= h($pasangan['status']) ?></td>
+                            <td><?= h($pasangan['oleh']) ?></td>
+                            <td class="whitespace-nowrap"><?= h($pasangan['waktu']) ?></td>
+                            <td><?= h($pasangan['catatan']) ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -165,36 +166,36 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
     <section class="mt-2.5 flex flex-col gap-2.5">
         <h2 class="p-4 font-display text-xl font-semibold">Log Email</h2>
 
-        <div class="overflow-x-auto rounded-[15px] border border-tt-outline bg-white">
-            <table class="w-full min-w-250 text-left text-sm">
-                <thead class="bg-tt-tablehead font-display text-xl">
+        <div class="tt-table-wrap">
+            <table class="tt-table min-w-250">
+                <thead>
                     <tr>
-                        <th class="w-1/6 px-7.5 py-8 font-semibold whitespace-nowrap">Dibuat</th>
-                        <th class="w-1/6 px-7.5 py-8 font-semibold whitespace-nowrap">Penerima</th>
-                        <th class="w-1/6 px-7.5 py-8 font-semibold whitespace-nowrap">Pasangan Laporan</th>
-                        <th class="w-1/6 px-7.5 py-8 font-semibold whitespace-nowrap">Status</th>
-                        <th class="w-1/6 px-7.5 py-8 font-semibold whitespace-nowrap">Percobaan</th>
-                        <th class="w-1/6 px-7.5 py-8 font-semibold whitespace-nowrap">Error Terakhir</th>
+                        <th class="w-1/6">Dibuat</th>
+                        <th class="w-1/6">Penerima</th>
+                        <th class="w-1/6">Pasangan Laporan</th>
+                        <th class="w-1/6">Status</th>
+                        <th class="w-1/6">Percobaan</th>
+                        <th class="w-1/6">Error Terakhir</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($logEmail as $log): ?>
-                        <tr class="border-b border-tt-outline last:border-b-0">
-                            <td class="px-7.5 py-4 whitespace-nowrap"><?= h($log['dibuat']) ?></td>
-                            <td class="px-7.5 py-4">
+                        <tr>
+                            <td class="whitespace-nowrap"><?= h($log['dibuat']) ?></td>
+                            <td>
                                 <p class="font-semibold"><?= h($log['nama']) ?></p>
                                 <p><?= h($log['email']) ?></p>
                             </td>
-                            <td class="px-7.5 py-4">
+                            <td>
                                 <p class="font-semibold"><?= h($log['kehilangan']) ?></p>
                                 <p class="whitespace-nowrap">mungkin sesuai dengan</p>
                                 <p class="font-semibold"><?= h($log['temuan']) ?></p>
                             </td>
-                            <td class="px-7.5 py-4">
-                                <span class="inline-flex rounded-full bg-[#e6f7ed] px-1.5 py-2.5 text-xs font-semibold text-[#17633f]"><?= h($log['status']) ?></span>
+                            <td>
+                                <span class="tt-badge bg-[#E6F7ED] text-[#17633F]"><?= h($log['status']) ?></span>
                             </td>
-                            <td class="px-7.5 py-4"><?= h($log['percobaan']) ?></td>
-                            <td class="px-7.5 py-4"><?= h($log['error']) ?></td>
+                            <td><?= h($log['percobaan']) ?></td>
+                            <td><?= h($log['error']) ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
