@@ -32,19 +32,13 @@ require_once APP_ROOT . '/App/views/components/header.php';
 require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 ?>
 
-<main class="w-full px-8 py-8 md:px-20">
+<main class="w-full px-4 py-8 md:px-20">
+    <?php require APP_ROOT . '/App/views/components/alert.php'; ?>
+
     <p class="text-xs font-semibold">LOST &amp; FOUND POLINEMA</p>
     <h1 class="mt-2 font-display text-2xl font-bold">Riwayat Laporan Saya</h1>
     <p class="mt-2 text-sm">Daftar laporan kehilangan, barang temuan, dan klaim yang pernah kamu ajukan.</p>
 
-    <?php if ($pesan !== null): ?>
-        <div class="mt-5 rounded-lg border px-4 py-3 text-sm <?= ($pesan['type'] ?? '') === 'success'
-            ? 'border-green-200 bg-green-50 text-green-800'
-            : 'border-red-200 bg-red-50 text-red-800' ?>"
-             role="status">
-            <?= h($pesan['message'] ?? '') ?>
-        </div>
-    <?php endif; ?>
 
     <?php foreach ([
         'temuan' => ['title' => 'Laporan Temuan Barang', 'description' => 'Daftar barang temuan yang pernah kamu laporkan.'],
@@ -53,7 +47,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
         <h2 class="mt-12 font-display text-lg font-semibold"><?= h($section['title']) ?></h2>
         <p class="mt-2 text-xs"><?= h($section['description']) ?></p>
 
-        <div class="mt-6 overflow-x-auto rounded-xl border border-indigo-200 bg-white">
+        <div class="mt-6 overflow-x-auto rounded-2xl border border-tt-outline bg-white">
             <table class="w-full min-w-180 text-left text-sm">
                 <thead class="bg-tt-tablehead font-display text-base">
                     <tr>
@@ -70,7 +64,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                         <tr><td colspan="6" class="px-6 py-6 text-left text-gray-500 md:text-center">Belum ada laporan.</td></tr>
                     <?php else: ?>
                         <?php foreach ($riwayat[$jenis] as $laporan): ?>
-                            <tr class="border-t border-indigo-100">
+                            <tr class="border-t border-tt-outline">
                                 <td class="px-6 py-4"><?= h($laporan['judul']) ?></td>
                                 <td class="px-6 py-4"><?= h($laporan['nama_kategori']) ?></td>
                                 <td class="px-6 py-4"><?= h($laporan['lokasi_kejadian']) ?></td>
@@ -91,7 +85,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
     <h2 class="mt-12 font-display text-lg font-semibold">Riwayat Klaim Barang</h2>
     <p class="mt-2 text-xs">Daftar klaim barang yang pernah kamu ajukan.</p>
 
-    <div class="mt-6 overflow-x-auto rounded-xl border border-indigo-200 bg-white">
+    <div class="mt-6 overflow-x-auto rounded-2xl border border-tt-outline bg-white">
         <table class="w-full min-w-180 text-left text-sm">
             <thead class="bg-tt-tablehead font-display text-base">
                 <tr>
@@ -108,7 +102,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                     <tr><td colspan="6" class="px-6 py-6 text-left text-gray-500 md:text-center">Belum ada klaim.</td></tr>
                 <?php else: ?>
                     <?php foreach ($riwayat['klaim'] as $klaim): ?>
-                        <tr class="border-t border-indigo-100">
+                        <tr class="border-t border-tt-outline">
                             <td class="px-6 py-4">
                                 <p class="font-semibold"><?= h($klaim['judul']) ?></p>
                                 <p class="text-xs"><?= h($klaim['lokasi_kejadian']) ?></p>

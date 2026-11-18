@@ -10,20 +10,22 @@
  */
 $menuAktif = $menuAktif ?? '';
 ?>
-<nav class="flex items-center justify-end border-b border-indigo-200 px-4 py-6 md:px-20">
+<nav class="flex min-h-19 items-center justify-end border-b-[0.5px] border-tt-outline px-4 py-3 md:px-11">
     <div class="flex items-center gap-3 text-xs font-semibold whitespace-nowrap min-[360px]:gap-4 min-[360px]:text-sm sm:gap-6 md:gap-10">
-        <a href="<?= base_url('index.php') ?>"
-            class="<?= $menuAktif === 'beranda' ? 'font-extrabold text-tt-orange' : 'text-tt-navy hover:text-tt-orange' ?>">
+        <a href="<?= h(base_url('index.php')) ?>"
+            class="<?= $menuAktif === 'beranda' ? 'font-extrabold text-tt-orange' : 'text-tt-navy hover:text-tt-orange' ?>"
+            <?= $menuAktif === 'beranda' ? 'aria-current="page"' : '' ?>>
             Beranda
         </a>
-        <a href="<?= base_url('daftar-barang.php') ?>"
-            class="<?= $menuAktif === 'daftar-barang' ? 'font-extrabold text-tt-orange' : 'text-tt-navy hover:text-tt-orange' ?>">
+        <a href="<?= h(base_url('daftar-barang.php')) ?>"
+            class="<?= $menuAktif === 'daftar-barang' ? 'font-extrabold text-tt-orange' : 'text-tt-navy hover:text-tt-orange' ?>"
+            <?= $menuAktif === 'daftar-barang' ? 'aria-current="page"' : '' ?>>
             Daftar Barang
         </a>
 
         <span class="text-tt-outline">|</span>
 
-        <a href="<?= base_url('login.php') ?>"
+        <a href="<?= h(base_url('login.php')) ?>"
             class="rounded-lg bg-tt-navy px-5 py-2 text-xs font-semibold text-white hover:bg-tt-orange hover:text-tt-navy">
             Login
         </a>

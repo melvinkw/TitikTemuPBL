@@ -20,7 +20,7 @@ $idPengguna = (int) $currentUser['id_pengguna'];
 
 $kategoriAktif = get_kategori_aktif();
 $posAktif = get_pos_aktif();
-$flashMessage = flash();
+$pesan = flash();
 
 $pageTitle = 'Dashboard';
 $menuAktif = 'dashboard';
@@ -47,13 +47,15 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 ?>
 
 <main class="w-full px-4 py-8 md:px-20">
+    <?php require APP_ROOT . '/App/views/components/alert.php'; ?>
+
 
     <!-- Sapaan -->
     <h1 class="font-display text-2xl font-bold">Halo, <?= h($namaUser) ?>! 👋</h1>
     <p class="mt-2 text-xs">Pantau laporanmu dan cari barang yang hilang atau ditemukan di sekitar kampus.</p>
 
     <!-- Banner -->
-    <div class="mt-6 rounded-xl border border-indigo-200 bg-white p-6">
+    <div class="mt-6 rounded-2xl border border-tt-outline bg-white p-6">
         <div class="flex md:flex-row flex-col items-center gap-6 ">
             <div class="flex-1">
                 <p class="text-xs font-semibold">LOST &amp; FOUND POLINEMA</p>
@@ -71,25 +73,25 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 
         <div class="mt-6 flex gap-2">
             <a href="?modal=hilang" class="rounded-lg bg-tt-navy px-3 py-3 text-xs font-semibold text-white hover:bg-tt-orange hover:text-tt-navy">+ Buat Laporan</a>
-            <a href="<?= base_url('mahasiswa/daftar-barang.php') ?>" class="rounded-lg border border-tt-navy px-3 py-3 text-xs font-semibold hover:bg-indigo-100">Cari Barang &gt;&gt;</a>
+            <a href="<?= base_url('mahasiswa/daftar-barang.php') ?>" class="rounded-lg border border-tt-navy px-3 py-3 text-xs font-semibold hover:bg-tt-primary">Cari Barang &gt;&gt;</a>
         </div>
     </div>
 
     <!-- Kotak angka -->
     <div class="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div class="rounded-xl border border-indigo-200 bg-white p-4">
+        <div class="rounded-2xl border border-tt-outline bg-white p-4">
             <p class="text-xl font-bold"><?= number_format($statistik['laporan_hilang']) ?></p>
             <p class="mt-1 text-sm">Laporan Kehilangan Saya</p>
         </div>
-        <div class="rounded-xl border border-indigo-200 bg-white p-4">
+        <div class="rounded-2xl border border-tt-outline bg-white p-4">
             <p class="text-xl font-bold"><?= number_format($statistik['laporan_temuan']) ?></p>
             <p class="mt-1 text-sm">Laporan Temuan Saya</p>
         </div>
-        <div class="rounded-xl border border-indigo-200 bg-white p-4">
+        <div class="rounded-2xl border border-tt-outline bg-white p-4">
             <p class="text-xl font-bold"><?= number_format($statistik['menunggu_pemeriksaan']) ?></p>
             <p class="mt-1 text-sm">Laporan Menunggu Pemeriksaan</p>
         </div>
-        <div class="rounded-xl border border-indigo-200 bg-white p-4">
+        <div class="rounded-2xl border border-tt-outline bg-white p-4">
             <p class="text-xl font-bold"><?= number_format($statistik['laporan_selesai']) ?></p>
             <p class="mt-1 text-sm">Laporan Selesai</p>
         </div>
@@ -119,7 +121,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 
         <?php if ($barangTemuan === []): ?>
 
-            <div class="col-span-full rounded-xl border border-indigo-200 bg-white p-8 text-center">
+            <div class="col-span-full rounded-2xl border border-tt-outline bg-white p-8 text-center">
                 <h3 class="font-display text-lg font-semibold">
                     Belum Ada Barang Temuan
                 </h3>
@@ -140,7 +142,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                     : base_url('mahasiswa/klaim/detail.php?id=' . $idBarang);
                 ?>
 
-                <div class="rounded-xl border border-indigo-200 bg-white p-4">
+                <div class="rounded-2xl border border-tt-outline bg-white p-4">
 
                     <!-- Foto akan dihubungkan melalui signed URL Storage. -->
                     <div class="flex h-48 w-full items-center justify-center rounded-lg bg-slate-100 text-sm text-slate-500">
@@ -202,7 +204,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
         </a>
     </div>
 
-    <div class="mt-4 overflow-x-auto rounded-xl border border-indigo-200 bg-white">
+    <div class="mt-4 overflow-x-auto rounded-2xl border border-tt-outline bg-white">
 
         <table class="w-full min-w-180 text-left text-sm">
             <thead class="bg-tt-tablehead font-display text-base">
@@ -241,7 +243,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                             ?? ucfirst($barang['status']);
                         ?>
 
-                        <tr class="border-t border-indigo-100">
+                        <tr class="border-t border-tt-outline">
 
                             <td class="px-6 py-4">
                                 <?= h($barang['judul']) ?>
@@ -295,7 +297,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
     </div>
 
     <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div class="rounded-xl border border-indigo-200 bg-white p-8">
+        <div class="rounded-2xl border border-tt-outline bg-white p-8">
             <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-tt-navy text-white">
                 <!-- Ikon centang dalam lingkaran -->
                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -306,7 +308,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
             <h3 class="mt-3 font-display text-lg font-semibold">1. Laporkan</h3>
             <p class="mt-2 text-xs">Laporkan barang yang hilang atau yang kamu temukan, lengkap dengan foto, lokasi, dan waktu kejadian.</p>
         </div>
-        <div class="rounded-xl border border-indigo-200 bg-white p-8">
+        <div class="rounded-2xl border border-tt-outline bg-white p-8">
             <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-tt-navy text-white">
                 <!-- Ikon centang dalam lingkaran -->
                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -317,7 +319,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
             <h3 class="mt-3 font-display text-lg font-semibold">2. Diperiksa</h3>
             <p class="mt-2 text-xs">Petugas memeriksa laporanmu. Laporan yang disetujui akan tampil di daftar barang.</p>
         </div>
-        <div class="rounded-xl border border-indigo-200 bg-white p-8">
+        <div class="rounded-2xl border border-tt-outline bg-white p-8">
             <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-tt-navy text-white">
                 <!-- Ikon centang dalam lingkaran -->
                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -331,7 +333,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
     </div>
 
     <!-- Ajakan buat laporan -->
-    <div class="mt-6 flex flex-col items-start justify-between gap-4 rounded-xl border border-indigo-200 bg-white p-6 md:flex-row md:items-center">
+    <div class="mt-6 flex flex-col items-start justify-between gap-4 rounded-2xl border border-tt-outline bg-white p-6 md:flex-row md:items-center">
         <div>
             <p class="text-xs font-semibold">MULAI SEKARANG</p>
             <h2 class="mt-2 font-display text-3xl font-bold">Barangmu bisa ditemukan kembali.</h2>
@@ -342,16 +344,6 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 
 </main>
 
-<?php if ($flashMessage !== null): ?>
-    <?php $isError = ($flashMessage['type'] ?? '') === 'error'; ?>
-
-    <div class="mb-5 rounded-lg border p-4
-        <?= $isError
-            ? 'border-red-300 bg-red-50 text-red-700'
-            : 'border-green-300 bg-green-50 text-green-700' ?>">
-        <?= h($flashMessage['message'] ?? '') ?>
-    </div>
-<?php endif; ?>
 
 <?php
 // Tampilkan modal kalau ada ?modal=hilang atau ?modal=temuan di URL

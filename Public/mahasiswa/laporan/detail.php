@@ -32,7 +32,7 @@ require_once APP_ROOT . '/App/views/components/header.php';
 require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 ?>
 
-<main class="w-full px-4 py-6 md:px-20">
+<main class="w-full px-4 py-8 md:px-20">
 
     <!-- Kembali ke halaman sebelumnya -->
     <a href="javascript:history.back()" class="text-sm font-semibold hover:text-tt-orange">&lt;&lt; Kembali ke daftar</a>
@@ -40,7 +40,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
     <div class="mt-8 grid grid-cols-1 items-start gap-8 lg:grid-cols-2">
 
         <!-- Kiri: info barang -->
-        <div class="rounded-xl border border-indigo-200 bg-white p-8">
+        <div class="rounded-2xl border border-tt-outline bg-white p-8">
             <span class="rounded-full bg-purple-100 px-2 py-1 text-xs font-semibold text-purple-600"><?= h($barang['kategori']) ?></span>
             <h1 class="mt-3 font-display text-2xl font-bold"><?= h($barang['nama']) ?></h1>
 
@@ -50,14 +50,14 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 
             <h2 class="mt-6 font-display text-2xl font-bold">Foto Barang</h2>
             <div class="mt-2 grid grid-cols-2 gap-2">
-                <img src="<?= base_url('assets/images/foto-barang.png') ?>" alt="Foto 1" class="row-span-2 h-full w-full rounded-xl object-cover">
-                <img src="<?= base_url('assets/images/foto-barang.png') ?>" alt="Foto 2" class="h-28 w-full rounded-xl object-cover">
-                <img src="<?= base_url('assets/images/foto-barang.png') ?>" alt="Foto 3" class="h-28 w-full rounded-xl object-cover">
+                <img src="<?= base_url('assets/images/foto-barang.png') ?>" alt="Foto 1" class="row-span-2 h-full w-full rounded-2xl object-cover">
+                <img src="<?= base_url('assets/images/foto-barang.png') ?>" alt="Foto 2" class="h-28 w-full rounded-2xl object-cover">
+                <img src="<?= base_url('assets/images/foto-barang.png') ?>" alt="Foto 3" class="h-28 w-full rounded-2xl object-cover">
             </div>
         </div>
 
         <!-- Kanan: status laporan -->
-        <div class="rounded-xl border border-indigo-200 bg-white p-8">
+        <div class="rounded-2xl border border-tt-outline bg-white p-8">
             <h2 class="font-display text-2xl font-bold">Status Laporan</h2>
             <span class="mt-3 inline-block rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700"><?= h($barang['status']) ?></span>
             <p class="mt-3 text-xs">Laporan dibuat pada <?= h($barang['dibuat']) ?>.</p>
@@ -67,7 +67,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
     <!-- Riwayat status -->
     <h2 class="mt-12 font-display text-lg font-semibold">Riwayat Status Laporan</h2>
 
-    <div class="mt-6 overflow-x-auto rounded-xl border border-indigo-200 bg-white">
+    <div class="mt-6 overflow-x-auto rounded-2xl border border-tt-outline bg-white">
         <table class="w-full min-w-160 text-left text-sm">
             <thead class="bg-tt-tablehead font-display text-base">
                 <tr>
@@ -79,7 +79,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
             </thead>
             <tbody>
                 <?php foreach ($riwayatStatus as $riwayat): ?>
-                    <tr class="border-t border-indigo-100">
+                    <tr class="border-t border-tt-outline">
                         <td class="px-6 py-4"><?= h($riwayat['waktu']) ?></td>
                         <td class="px-6 py-4">
                             <?= h($riwayat['perubahan']) ?>

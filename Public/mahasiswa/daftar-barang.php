@@ -13,6 +13,7 @@ require_once APP_ROOT . '/App/queries/master_queries.php';
 require_once APP_ROOT . '/App/queries/mahasiswa_queries.php';
 
 $currentUser = auth_require_role(['mahasiswa']);
+$pesan = flash();
 
 $idPengguna = (int) $currentUser['id_pengguna'];
 
@@ -59,6 +60,8 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 ?>
 
 <main class="w-full px-4 py-8 md:px-20">
+    <?php require APP_ROOT . '/App/views/components/alert.php'; ?>
+
 
     <!-- Judul halaman -->
     <p class="text-xs font-semibold">
@@ -77,7 +80,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
     <form
         action="<?= h(base_url('mahasiswa/daftar-barang.php')) ?>"
         method="GET"
-        class="mt-8 rounded-xl border border-indigo-200 bg-white p-4">
+        class="mt-8 rounded-2xl border border-tt-outline bg-white p-4">
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
 
@@ -185,7 +188,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 
             <a
                 href="<?= h(base_url('mahasiswa/daftar-barang.php')) ?>"
-                class="rounded-lg border border-tt-navy px-3 py-3 text-sm font-semibold hover:bg-indigo-100">
+                class="rounded-lg border border-tt-navy px-3 py-3 text-sm font-semibold hover:bg-tt-primary">
                 Reset
             </a>
 
@@ -209,7 +212,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 
         <?php if ($daftarBarang === []): ?>
 
-            <div class="col-span-full rounded-xl border border-indigo-200 bg-white p-10 text-center">
+            <div class="col-span-full rounded-2xl border border-tt-outline bg-white p-10 text-center">
 
                 <h3 class="font-display text-lg font-semibold">
                     Barang Tidak Ditemukan
@@ -249,7 +252,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                 }
                 ?>
 
-                <article class="rounded-xl border border-indigo-200 bg-white p-4">
+                <article class="rounded-2xl border border-tt-outline bg-white p-4">
 
                     <!-- Foto barang -->
                     <div class="relative">

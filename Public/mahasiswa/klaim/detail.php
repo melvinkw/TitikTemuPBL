@@ -41,21 +41,14 @@ require_once APP_ROOT . '/App/views/components/header.php';
 require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 ?>
 
-<main class="w-full px-8 py-6 md:px-20">
+<main class="w-full px-4 py-8 md:px-20">
+    <?php require APP_ROOT . '/App/views/components/alert.php'; ?>
+
     <a href="<?= h(base_url('mahasiswa/daftar-barang.php')) ?>"
        class="text-sm font-semibold hover:text-tt-orange">&lt;&lt; Kembali ke daftar</a>
 
-    <?php if ($pesan !== null): ?>
-        <div class="mt-5 rounded-lg border px-4 py-3 text-sm <?= ($pesan['type'] ?? '') === 'success'
-            ? 'border-green-200 bg-green-50 text-green-800'
-            : 'border-red-200 bg-red-50 text-red-800' ?>"
-             role="status">
-            <?= h($pesan['message'] ?? '') ?>
-        </div>
-    <?php endif; ?>
-
     <div class="mt-8 grid grid-cols-1 items-start gap-8 lg:grid-cols-2">
-        <section class="rounded-xl border border-indigo-200 bg-white p-8">
+        <section class="rounded-2xl border border-tt-outline bg-white p-8">
             <span class="rounded-full bg-purple-100 px-2 py-1 text-xs font-semibold text-purple-600">
                 <?= h($barang['nama_kategori']) ?>
             </span>
@@ -70,7 +63,7 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
             <p class="mt-2 whitespace-pre-line text-sm leading-6"><?= h($barang['deskripsi']) ?></p>
         </section>
 
-        <section class="rounded-xl border border-indigo-200 bg-white p-8">
+        <section class="rounded-2xl border border-tt-outline bg-white p-8">
             <h2 class="font-display text-2xl font-bold">Status Laporan</h2>
             <span class="mt-3 inline-block rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
                 Tersedia untuk diklaim
