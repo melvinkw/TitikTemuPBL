@@ -1,10 +1,12 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 /**
  * Public/admin/dashboard.php
  * Halaman Dashboard admin (Figma: Admin-Dashboard).
+ * Angka statistik dan isi tabel masih data contoh, nanti diganti hasil query database.
  */
+
+declare(strict_types=1);
+
 require_once __DIR__ . '/../../App/config/bootstrap.php';
 require_once APP_ROOT . '/App/helpers/auth.php';
 
@@ -12,9 +14,10 @@ $currentUser = auth_require_role(['admin']);
 
 $pageTitle = 'Dashboard Admin';
 $menuAktif = 'dashboard';
-$namaUser = 'John Doe';
+$judulHalaman = 'Dashboard Admin';
+$deskripsiHalaman = 'Pantau laporan yang menunggu pemeriksaan, kandidat kecocokan, dan aktivitas mahasiswa dari satu halaman.';
 
-// Data dummy — nanti diganti dari database
+// Data contoh
 $statistik = [
     ['angka' => 128, 'label' => 'Laporan Menunggu Pemeriksaan'],
     ['angka' => 128, 'label' => 'Mahasiswa Aktif'],
@@ -40,58 +43,44 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
 
     <!-- Sapaan -->
     <div class="flex flex-col gap-2 p-4">
-        <h1 class="font-display text-[28px] font-bold">Halo, <?= h($namaUser) ?>! 👋</h1>
-        <p class="text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <p class="font-display text-[28px] font-bold">Halo, <?= h($currentUser['nama'] ?? '') ?>! 👋</p>
+        <p class="text-xs">Selamat datang kembali. Berikut ringkasan aktivitas TitikTemu hari ini.</p>
     </div>
 
-    <!-- Judul halaman -->
-    <div class="flex flex-col gap-2 p-4">
-        <p class="text-sm font-semibold">RUANG KERJA ADMINISTRATOR</p>
-        <h2 class="font-display text-[28px] font-bold">Dashboard Admin</h2>
-        <p class="text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-    </div>
+    <?php require APP_ROOT . '/App/views/components/judul-halaman.php'; ?>
 
-    <!-- Kartu statistik -->
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-        <?php foreach ($statistik as $stat): ?>
-            <div class="flex flex-col gap-2 rounded-2xl border border-tt-outline bg-white p-6">
-                <p class="font-display text-[28px] font-bold"><?= h($stat['angka']) ?></p>
-                <p class="text-base"><?= h($stat['label']) ?></p>
-            </div>
-        <?php endforeach; ?>
-    </div>
+    <?php require APP_ROOT . '/App/views/components/kartu-statistik.php'; ?>
 
     <!-- Laporan yang perlu diperiksa -->
     <section class="mt-2.5 flex flex-col gap-2.5">
         <div class="flex items-end justify-between gap-2.5">
-            <h3 class="p-4 font-display text-xl font-semibold">Laporan yang Perlu Diperiksa</h3>
-            <!-- Halaman daftar laporan belum ada -->
-            <a href="#" class="px-2.75 py-3 text-sm font-semibold whitespace-nowrap">Lihat Semua &gt;&gt;</a>
+            <h2 class="p-4 font-display text-xl font-semibold">Laporan yang Perlu Diperiksa</h2>
+            <!-- Halaman daftar semua laporan belum ada -->
+            <a href="#" class="px-2.75 py-3 text-sm font-semibold whitespace-nowrap hover:text-tt-orange">Lihat Semua &gt;&gt;</a>
         </div>
 
-        <div class="overflow-x-auto rounded-[15px] border border-tt-outline bg-white">
-            <table class="w-full min-w-225 text-left text-sm">
-                <thead class="bg-tt-tablehead font-display text-xl">
+        <div class="tt-table-wrap">
+            <table class="tt-table min-w-225">
+                <thead>
                     <tr>
-                        <th class="px-7.5 py-8 font-semibold whitespace-nowrap">Jenis</th>
-                        <th class="px-7.5 py-8 font-semibold whitespace-nowrap">Barang</th>
-                        <th class="px-7.5 py-8 font-semibold whitespace-nowrap">Pelapor</th>
-                        <th class="px-7.5 py-8 font-semibold whitespace-nowrap">Lokasi</th>
-                        <th class="px-7.5 py-8 font-semibold whitespace-nowrap">Dibuat</th>
-                        <th class="px-7.5 py-8 font-semibold whitespace-nowrap">Aksi</th>
+                        <th>Jenis</th>
+                        <th>Barang</th>
+                        <th>Pelapor</th>
+                        <th>Lokasi</th>
+                        <th>Dibuat</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($laporanPerluDiperiksa as $laporan): ?>
-                        <tr class="border-b border-tt-outline last:border-b-0">
-                            <td class="px-7.5 py-4"><?= h($laporan['jenis']) ?></td>
-                            <td class="px-7.5 py-4"><?= h($laporan['barang']) ?></td>
-                            <td class="px-7.5 py-4"><?= h($laporan['pelapor']) ?></td>
-                            <td class="px-7.5 py-4"><?= h($laporan['lokasi']) ?></td>
-                            <td class="px-7.5 py-4 whitespace-nowrap"><?= h($laporan['dibuat']) ?></td>
-                            <td class="px-7.5 py-4">
-                                <!-- Halaman detail laporan admin belum dibuat -->
-                                <a href="#" class="inline-flex h-10.75 items-center rounded-[10px] bg-tt-navy px-2.75 font-semibold text-white">Periksa</a>
+                        <tr>
+                            <td><?= h($laporan['jenis']) ?></td>
+                            <td><?= h($laporan['barang']) ?></td>
+                            <td><?= h($laporan['pelapor']) ?></td>
+                            <td><?= h($laporan['lokasi']) ?></td>
+                            <td class="whitespace-nowrap"><?= h($laporan['dibuat']) ?></td>
+                            <td>
+                                <a href="<?= h(base_url('admin/laporan/detail.php')) ?>" class="tt-btn">Periksa</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -104,30 +93,30 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
     <section class="mt-2.5 flex flex-col gap-2.5">
         <div class="flex items-end justify-between gap-2.5">
             <div class="flex max-w-232.5 flex-col gap-2 p-4">
-                <h3 class="font-display text-xl font-semibold">Login mahasiswa terbaru</h3>
-                <p class="text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                <h2 class="font-display text-xl font-semibold">Login Mahasiswa Terbaru</h2>
+                <p class="text-xs">Mahasiswa yang terakhir masuk ke TitikTemu menggunakan akun SIAKAD.</p>
             </div>
-            <!-- Halaman daftar mahasiswa belum ada -->
-            <a href="#" class="px-2.75 py-3 text-sm font-semibold whitespace-nowrap">Lihat Semua &gt;&gt;</a>
+            <!-- Halaman daftar semua mahasiswa belum ada -->
+            <a href="#" class="px-2.75 py-3 text-sm font-semibold whitespace-nowrap hover:text-tt-orange">Lihat Semua &gt;&gt;</a>
         </div>
 
-        <div class="overflow-x-auto rounded-[15px] border border-tt-outline bg-white">
-            <table class="w-full min-w-225 text-left text-sm">
-                <thead class="bg-tt-tablehead font-display text-xl">
+        <div class="tt-table-wrap">
+            <table class="tt-table min-w-225">
+                <thead>
                     <tr>
-                        <th class="px-7.5 py-8 font-semibold whitespace-nowrap">Nama</th>
-                        <th class="px-7.5 py-8 font-semibold whitespace-nowrap">NIM</th>
-                        <th class="px-7.5 py-8 font-semibold whitespace-nowrap">Prodi</th>
-                        <th class="px-7.5 py-8 font-semibold whitespace-nowrap">Login Terakhir</th>
+                        <th>Nama</th>
+                        <th>NIM</th>
+                        <th>Prodi</th>
+                        <th>Login Terakhir</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($loginTerbaru as $mhs): ?>
-                        <tr class="border-b border-tt-outline last:border-b-0">
-                            <td class="h-18 px-7.5"><?= h($mhs['nama']) ?></td>
-                            <td class="h-18 px-7.5"><?= h($mhs['nim']) ?></td>
-                            <td class="h-18 px-7.5"><?= h($mhs['prodi']) ?></td>
-                            <td class="h-18 px-7.5 whitespace-nowrap"><?= h($mhs['login']) ?></td>
+                    <?php foreach ($loginTerbaru as $mahasiswa): ?>
+                        <tr>
+                            <td><?= h($mahasiswa['nama']) ?></td>
+                            <td><?= h($mahasiswa['nim']) ?></td>
+                            <td><?= h($mahasiswa['prodi']) ?></td>
+                            <td class="whitespace-nowrap"><?= h($mahasiswa['login']) ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

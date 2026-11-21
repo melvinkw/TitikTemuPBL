@@ -63,4 +63,35 @@ body {
     .tt-badge {
         @apply inline-flex w-fit items-center rounded-full px-1.5 py-2.5 text-xs font-semibold whitespace-nowrap;
     }
+
+    /*
+     * Tabel data (Figma: kepala tabel biru muda, garis outline, sudut 15px)
+     * Contoh: <div class="tt-table-wrap">
+     *             <table class="tt-table min-w-225"> ... </table>
+     *         </div>
+     * Lebar minimum (min-w-*) ditulis di tabel supaya di HP tabel bisa digeser.
+     */
+    .tt-table-wrap {
+        @apply overflow-x-auto rounded-[15px] border border-tt-outline bg-white;
+    }
+
+    .tt-table {
+        @apply w-full text-left text-sm;
+    }
+
+    .tt-table thead {
+        @apply bg-tt-tablehead font-display text-xl;
+    }
+
+    .tt-table th {
+        @apply px-7.5 py-8 font-semibold whitespace-nowrap;
+    }
+
+    .tt-table td {
+        @apply h-18 px-7.5 py-4;
+    }
+
+    .tt-table tbody tr {
+        @apply border-b border-tt-outline last:border-b-0;
+    }
 }
