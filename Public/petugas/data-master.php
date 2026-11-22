@@ -1,11 +1,13 @@
-
 <?php
 
 declare(strict_types=1);
 
 require_once dirname(__DIR__, 2) . '/App/config/bootstrap.php';
 require_once APP_ROOT . '/App/helpers/auth.php';
+require_once APP_ROOT . '/App/views/components/header.php';
+require_once APP_ROOT . '/App/views/components/petugas/navbar.php';
 
+$pageTitle = 'Lihat Data Master'; 
 $currentUser = auth_require_role(['petugas']);
 
 $masterData = [
@@ -79,35 +81,7 @@ $tabData = [
 
 ?>
 
-<!DOCTYPE html>
-<html lang="id">
-
-<head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#DCE3FD">
-
-    <title>Lihat Data Master | TitikTemu</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=League+Spartan:wght@600;700;800&display=swap"
-        rel="stylesheet">
-
-    <link rel="stylesheet" href="<?= h(base_url('assets/css/app.css')) ?>">
-
-</head>
-
 <body class="min-h-screen bg-tt-primary font-body text-tt-navy antialiased">
-
-    <header>
-
-        <?php require APP_ROOT . '/Public/partials/components/petugas/navbar.php'; ?>
-
-    </header>
 
     <main class="mx-auto flex w-full max-w-[1440px] flex-col gap-8 px-5 py-7 sm:px-8 lg:px-20 lg:py-9">
 
@@ -249,11 +223,7 @@ $tabData = [
 
     </main>
 
-    <footer>
-
-        <?php require APP_ROOT . '/Public/partials/components/petugas/footer.php'; ?>
-
-    </footer>
+     <?php require APP_ROOT . '/Public/partials/components/petugas/footer.php'; ?>
 
     <script>
         window.masterData = <?= json_encode(
