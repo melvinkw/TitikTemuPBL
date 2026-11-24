@@ -5,6 +5,8 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 3) . '/App/config/bootstrap.php';
 require_once APP_ROOT . '/App/helpers/auth.php';
 require_once APP_ROOT . '/App/queries/klaim_queries.php';
+require_once APP_ROOT . '/App/queries/mahasiswa_queries.php';
+require_once APP_ROOT . '/App/services/supabase_storage.php';
 
 $currentUser = auth_require_role(['mahasiswa']);
 
@@ -21,6 +23,28 @@ $barang = get_mahasiswa_claimable_report(
     (int) $idPengumuman,
     (int) $currentUser['id_pengguna']
 );
+
+$fotoBarang = get_mahasiswa_public_report_photos(
+    $pdo,
+    (int) $idPengumuman
+);
+
+foreach ($fotoBarang as &$foto) {
+    $foto['url'] = null;
+
+    try {
+        $foto['url'] = supabase_storage_create_signed_url(
+            $foto['bucket_name'],
+            $foto['file_path']
+        );
+    } catch (Throwable $error) {
+        error_log(
+            '[TitikTemu] Gagal membuat URL foto detail klaim: '
+            . $error->getMessage()
+        );
+    }
+}
+unset($foto);
 
 if ($barang === null) {
     http_response_code(404);
@@ -58,6 +82,38 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                 <?= h(format_date_time((string) $barang['tanggal_waktu_kejadian'])) ?>
             </p>
             <p class="mt-3 text-sm">Pelapor: <?= h($barang['nama_pelapor']) ?></p>
+            <h2 class="mt-6 font-display text-xl font-bold">
+    Foto Barang
+</h2>
+
+<div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+    <?php if ($fotoBarang === []): ?>
+
+        <div class="col-span-full flex h-48 items-center justify-center rounded-lg bg-slate-100 text-sm text-slate-500">
+            Foto belum tersedia
+        </div>
+
+    <?php else: ?>
+
+        <?php foreach ($fotoBarang as $foto): ?>
+
+            <?php if ($foto['url'] !== null): ?>
+
+                <img
+                    src="<?= h($foto['url']) ?>"
+                    alt="<?= h($foto['nama_file'] ?? $barang['judul']) ?>"
+                    loading="lazy"
+                    class="h-48 w-full rounded-lg object-cover"
+                >
+
+            <?php endif; ?>
+
+        <?php endforeach; ?>
+
+    <?php endif; ?>
+
+</div>
 
             <h2 class="mt-6 font-display text-xl font-bold">Deskripsi barang</h2>
             <p class="mt-2 whitespace-pre-line text-sm leading-6"><?= h($barang['deskripsi']) ?></p>
@@ -80,9 +136,18 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 
             <?php if ($klaimAktif !== null): ?>
                 <div class="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                    Kamu sudah memiliki klaim dengan status
-                    <strong><?= h($klaimAktif['status_verifikasi']) ?></strong>
-                    untuk barang ini. Pengajuan baru tidak dapat dibuat selama klaim tersebut aktif.
+                    <?php if ($klaimAktif['status_verifikasi'] === 'siap_diambil'): ?>
+                        Klaim kamu sudah disetujui dan barang siap diambil.
+                        Ambil barang di pos penyerahan, lalu konfirmasi lewat halaman riwayat.
+                        <a href="<?= h(base_url('mahasiswa/klaim/konfirmasi.php?id=' . (int) $klaimAktif['id_klaim'])) ?>"
+                           class="mt-3 inline-block rounded-lg bg-tt-navy px-3 py-2 text-xs font-semibold text-white hover:bg-tt-orange hover:text-tt-navy">
+                            Konfirmasi Barang Diterima
+                        </a>
+                    <?php else: ?>
+                        Kamu sudah memiliki klaim dengan status
+                        <strong>Menunggu Verifikasi</strong>
+                        untuk barang ini. Pengajuan baru tidak dapat dibuat selama klaim tersebut aktif.
+                    <?php endif; ?>
                 </div>
             <?php else: ?>
                 <form action="<?= h(base_url('mahasiswa/klaim/simpan.php')) ?>"
