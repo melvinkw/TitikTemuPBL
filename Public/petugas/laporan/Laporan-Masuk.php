@@ -5,20 +5,49 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 3) . '/App/config/bootstrap.php';
 require_once APP_ROOT . '/App/config/database.php';
 require_once APP_ROOT . '/App/helpers/auth.php';
+require_once APP_ROOT . '/App/queries/master_queries.php';
 require_once APP_ROOT . '/App/queries/petugas_laporan_queries.php';
-require_once APP_ROOT . '/App/services/supabase_storage_signed_url.php';
+require_once APP_ROOT . '/App/services/supabase_storage.php';
 
 $currentUser = auth_require_role(['petugas']);
 $pageTitle = 'Laporan Masuk';
 $menuAktif = 'laporan-masuk';
 
+// Filter dibaca dari URL; nilai yang tidak valid diabaikan.
+$filterJudul = trim((string) ($_GET['judul'] ?? ''));
+$filterJenis = (string) ($_GET['jenis'] ?? '');
+$filterLokasi = trim((string) ($_GET['lokasi'] ?? ''));
+$filterKategori = (int) ($_GET['kategori'] ?? 0);
+
+if (!in_array($filterJenis, ['temuan', 'hilang'], true)) {
+    $filterJenis = '';
+}
+
+$adaFilter = $filterJudul !== ''
+    || $filterJenis !== ''
+    || $filterLokasi !== ''
+    || $filterKategori > 0;
+
+$kategoriList = [];
 $reports = [];
+$totalMenunggu = 0;
 $reportError = null;
 
 try {
+    $pdo = db();
 
-    $reports = get_petugas_pending_reports(db());
+    $kategoriList = get_kategori_aktif();
+    $totalMenunggu = count_petugas_pending_reports($pdo);
 
+    $reports = get_petugas_pending_reports($pdo, [
+        'judul' => $filterJudul,
+        'jenis' => $filterJenis,
+        'lokasi' => $filterLokasi,
+        'id_kategori' => $filterKategori,
+    ]);
+
+    // Signed URL foto dibuat per laporan; kegagalan satu foto tidak
+    // menggagalkan seluruh halaman.
     foreach ($reports as &$report) {
         $report['foto_url'] = null;
 
@@ -30,21 +59,18 @@ try {
         }
 
         try {
-
             $report['foto_url'] = supabase_storage_create_signed_url(
                 $bucket,
                 $path,
                 300
             );
         } catch (Throwable $photoError) {
-
             error_log(
-                '[TitikTemu] Gagal membuat signed URL foto: '
+                '[TitikTemu] Gagal membuat signed URL foto laporan masuk: '
                     . $photoError->getMessage()
             );
         }
     }
-
     unset($report);
 } catch (Throwable $error) {
     error_log(
@@ -54,6 +80,17 @@ try {
 
     $reportError = 'Gagal memuat daftar laporan. Silakan coba kembali.';
 }
+
+// Label jenis dipakai di dropdown filter dan badge kartu.
+$labelJenis = [
+    'temuan' => 'Barang Temuan',
+    'hilang' => 'Kehilangan Barang',
+];
+
+$badgeJenis = [
+    'temuan' => 'bg-sky-100 text-sky-600',
+    'hilang' => 'bg-orange-100 text-tt-orange',
+];
 
 $pesan = flash();
 
@@ -78,61 +115,99 @@ require_once APP_ROOT . '/App/views/components/petugas/navbar.php';
     </p>
 
     <!-- Total laporan -->
-    <div class="mt-5 flex items-center gap-2">
+    <div class="mt-5 flex flex-wrap items-center gap-2">
 
         <span class="text-sm text-slate-600">
             Total laporan menunggu:
         </span>
 
-        <span id="total-laporan" class="rounded-full bg-[#FFF7DD] px-3 py-1 text-sm font-semibold text-[#7A5605]">
-            <?= count($reports) ?>
+        <span class="rounded-full bg-[#FFF7DD] px-3 py-1 text-sm font-semibold text-[#7A5605]">
+            <?= $totalMenunggu ?>
         </span>
+
+        <?php if ($adaFilter): ?>
+            <span class="text-sm text-slate-600">
+                &middot; Hasil pencarian: <?= count($reports) ?> laporan
+            </span>
+        <?php endif; ?>
 
     </div>
 
-    <!-- Filter -->
-    <form id="filter-form" class="mt-5 rounded-2xl border border-tt-outline bg-white p-4">
+    <!-- Filter: dikirim ke server lewat GET -->
+    <form
+        action="<?= h(base_url('petugas/laporan/Laporan-Masuk.php')) ?>"
+        method="get"
+        class="mt-5 rounded-2xl border border-tt-outline bg-white p-4">
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
 
             <div>
-
-                <label for="filter-nama" class="block font-display text-base font-semibold">
+                <label for="filter-judul" class="block font-display text-base font-semibold">
                     Nama Barang
                 </label>
 
-                <input type="text" id="filter-nama" placeholder="Contoh: Tumbler" class="mt-2 h-12 w-full rounded-[10px] border border-tt-outline px-3 text-sm placeholder:text-tt-outline">
-
+                <input
+                    type="text"
+                    id="filter-judul"
+                    name="judul"
+                    value="<?= h($filterJudul) ?>"
+                    maxlength="150"
+                    placeholder="Contoh: Tumbler"
+                    class="mt-2 h-12 w-full rounded-[10px] border border-tt-outline px-3 text-sm placeholder:text-tt-outline">
             </div>
 
             <div>
-
                 <label for="filter-jenis" class="block font-display text-base font-semibold">
                     Jenis
                 </label>
 
-                <input type="text" id="filter-jenis" placeholder="Contoh: Barang Temuan" class="mt-2 h-12 w-full rounded-[10px] border border-tt-outline px-3 text-sm placeholder:text-tt-outline">
-
+                <select
+                    id="filter-jenis"
+                    name="jenis"
+                    class="mt-2 h-12 w-full rounded-[10px] border border-tt-outline bg-white px-3 text-sm">
+                    <option value="">Semua jenis</option>
+                    <option value="temuan" <?= $filterJenis === 'temuan' ? 'selected' : '' ?>>
+                        Barang Temuan
+                    </option>
+                    <option value="hilang" <?= $filterJenis === 'hilang' ? 'selected' : '' ?>>
+                        Barang Kehilangan
+                    </option>
+                </select>
             </div>
 
             <div>
-
                 <label for="filter-lokasi" class="block font-display text-base font-semibold">
                     Lokasi Kejadian
                 </label>
 
-                <input type="text" id="filter-lokasi" placeholder="Contoh: Lobby Gedung Sipil" class="mt-2 h-12 w-full rounded-[10px] border border-tt-outline px-3 text-sm placeholder:text-tt-outline">
-
+                <input
+                    type="text"
+                    id="filter-lokasi"
+                    name="lokasi"
+                    value="<?= h($filterLokasi) ?>"
+                    maxlength="200"
+                    placeholder="Contoh: Lobby Gedung Sipil"
+                    class="mt-2 h-12 w-full rounded-[10px] border border-tt-outline px-3 text-sm placeholder:text-tt-outline">
             </div>
 
             <div>
-
                 <label for="filter-kategori" class="block font-display text-base font-semibold">
-                    Kategori barang
+                    Kategori Barang
                 </label>
 
-                <input type="text" id="filter-kategori" placeholder="Contoh: Elektronik" class="mt-2 h-12 w-full rounded-[10px] border border-tt-outline px-3 text-sm placeholder:text-tt-outline">
-
+                <select
+                    id="filter-kategori"
+                    name="kategori"
+                    class="mt-2 h-12 w-full rounded-[10px] border border-tt-outline bg-white px-3 text-sm">
+                    <option value="">Semua kategori</option>
+                    <?php foreach ($kategoriList as $kategori): ?>
+                        <option
+                            value="<?= (int) $kategori['id_kategori'] ?>"
+                            <?= $filterKategori === (int) $kategori['id_kategori'] ? 'selected' : '' ?>>
+                            <?= h($kategori['nama_kategori']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
         </div>
@@ -143,9 +218,10 @@ require_once APP_ROOT . '/App/views/components/petugas/navbar.php';
                 Cari Laporan
             </button>
 
-            <button type="reset" class="rounded-lg border border-tt-navy px-3 py-3 text-sm font-semibold hover:bg-tt-primary">
+            <a href="<?= h(base_url('petugas/laporan/Laporan-Masuk.php')) ?>"
+               class="rounded-lg border border-tt-navy px-3 py-3 text-sm font-semibold hover:bg-tt-primary">
                 Reset
-            </button>
+            </a>
 
         </div>
 
@@ -161,39 +237,40 @@ require_once APP_ROOT . '/App/views/components/petugas/navbar.php';
 
     <?php endif; ?>
 
-    <!-- Card list -->
-    <div id="daftar-laporan" class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
+    <!-- Kartu laporan -->
+    <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
 
-        <?php if ($reports === [] && $reportError === null): ?>
+        <?php if ($reportError === null && $reports === []): ?>
 
             <div class="col-span-full rounded-2xl border border-tt-outline bg-white p-10 text-center">
 
-                <h3 class="mb-2 font-display text-xl font-bold text-tt-navy">
-                    Belum Ada Laporan Masuk
+                <h3 class="font-display text-lg font-semibold">
+                    <?= $adaFilter ? 'Laporan Tidak Ditemukan' : 'Belum Ada Laporan Masuk' ?>
                 </h3>
 
-                <p class="text-sm text-slate-500">
-                    Saat ini tidak ada laporan yang menunggu pemeriksaan.
+                <p class="mt-2 text-sm text-gray-500">
+                    <?= $adaFilter
+                        ? 'Tidak ada laporan yang sesuai dengan filter pencarian.'
+                        : 'Saat ini tidak ada laporan yang menunggu pemeriksaan.' ?>
                 </p>
+
+                <?php if ($adaFilter): ?>
+                    <a href="<?= h(base_url('petugas/laporan/Laporan-Masuk.php')) ?>"
+                       class="mt-4 inline-block text-sm font-semibold text-tt-orange">
+                        Hapus Filter
+                    </a>
+                <?php endif; ?>
 
             </div>
 
         <?php else: ?>
 
-
             <?php foreach ($reports as $report): ?>
 
                 <?php
                 $jenis = (string) ($report['jenis'] ?? '');
-
-                if ($jenis === 'temuan') {
-                    $jenisLabel = 'Barang Temuan';
-                    $badgeClass = 'bg-sky-100 text-sky-600';
-                } else {
-                    $jenisLabel = 'Kehilangan Barang';
-                    $badgeClass = 'bg-orange-100 text-orange-600';
-                }
-
+                $jenisLabel = $labelJenis[$jenis] ?? ucfirst($jenis);
+                $badgeClass = $badgeJenis[$jenis] ?? 'bg-slate-100 text-slate-600';
                 $fotoUrl = $report['foto_url'] ?? null;
 
                 $detailUrl = base_url(
@@ -202,157 +279,74 @@ require_once APP_ROOT . '/App/views/components/petugas/navbar.php';
                 );
                 ?>
 
-                <!-- Card -->
-                <article data-report-card data-name="<?= h($report['judul'] ?? '') ?>" data-type="<?= h($jenisLabel) ?>" data-location="<?= h($report['lokasi_kejadian'] ?? '') ?>" data-category="<?= h($report['nama_kategori'] ?? '') ?>" class="flex h-full min-h-[390px] min-w-0 flex-col overflow-hidden rounded-2xl border border-tt-outline bg-white p-4">
+                <article class="flex h-full flex-col rounded-2xl border border-tt-outline bg-white p-4">
 
-                    <!-- Isi -->
-                    <div class="flex flex-1 flex-col">
+                    <!-- Foto barang + badge jenis -->
+                    <div class="relative">
 
-                        <!-- Foto: hapus h-full agar tidak memaksa tinggi berlebih -->
-                        <div class="relative mb-4 aspect-[4/3] w-full shrink-0 overflow-hidden rounded-xl bg-slate-100">
+                        <?php if ($fotoUrl !== null): ?>
 
-                            <span class="absolute left-2 top-2 z-10 rounded-full px-2 py-1 text-xs font-semibold <?= h($badgeClass) ?>">
-                                <?= h($jenisLabel) ?>
-                            </span>
+                            <img
+                                src="<?= h($fotoUrl) ?>"
+                                alt="<?= h($report['judul'] ?? 'Foto barang') ?>"
+                                loading="lazy"
+                                class="h-48 w-full rounded-lg object-cover">
 
-                            <?php if (!empty($fotoUrl)): ?>
+                        <?php else: ?>
 
-                                <img
-                                    src="<?= h($fotoUrl) ?>"
-                                    alt="<?= h($report['judul'] ?? 'Foto barang') ?>"
-                                    class="absolute inset-0 block h-full w-full object-cover"
-                                    loading="lazy">
+                            <div class="flex h-48 w-full items-center justify-center rounded-lg bg-slate-100 text-sm text-slate-500">
+                                Foto belum tersedia
+                            </div>
 
-                            <?php else: ?>
+                        <?php endif; ?>
 
-                                <div class="absolute inset-0 flex items-center justify-center text-sm text-slate-400">
-                                    Foto tidak tersedia
-                                </div>
-
-                            <?php endif; ?>
-
-                        </div>
-
-                        <!-- Desc barang -->
-                        <div class="min-w-0">
-
-                            <h2 class="break-words font-display text-lg font-bold leading-6 text-tt-navy">
-                                <?= h($report['judul'] ?? '-') ?>
-                            </h2>
-
-                            <p class="mt-1 line-clamp-2 min-h-[40px] break-all text-sm leading-5 text-tt-navy">
-                                <?= h($report['deskripsi'] ?? '-') ?>
-                            </p>
-
-                            <p class="mt-3 break-words text-sm leading-5 text-tt-navy">
-                                <?= h($report['lokasi_kejadian'] ?? '-') ?>
-                            </p>
-
-                            <p class="mt-2 text-sm leading-5 text-tt-navy">
-                                <?= h(format_date_time($report['tanggal_waktu_kejadian'] ?? null)) ?>
-                            </p>
-
-                        </div>
+                        <span class="absolute left-2 top-2 rounded-full px-2 py-1 text-xs font-semibold <?= h($badgeClass) ?>">
+                            <?= h($jenisLabel) ?>
+                        </span>
 
                     </div>
 
-                    <a href="<?= h($detailUrl) ?>" class="mt-auto shrink-0 pt-6 text-sm font-semibold text-tt-navy transition hover:text-tt-orange">
+                    <!-- Informasi barang -->
+                    <h3 class="mt-4 font-display text-lg font-semibold">
+                        <?= h($report['judul'] ?? '-') ?>
+                    </h3>
 
+                    <p class="mt-1 line-clamp-2 text-sm text-gray-600">
+                        <?= h($report['deskripsi'] ?? '-') ?>
+                    </p>
+
+                    <div class="mt-3 space-y-2 text-sm">
+
+                        <p>
+                            <span class="font-semibold">Kategori:</span>
+                            <?= h($report['nama_kategori'] ?? '-') ?>
+                        </p>
+
+                        <p>
+                            <span class="font-semibold">Lokasi:</span>
+                            <?= h($report['lokasi_kejadian'] ?? '-') ?>
+                        </p>
+
+                        <p class="text-xs text-gray-500">
+                            <?= h(format_date_time($report['tanggal_waktu_kejadian'] ?? null)) ?>
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="<?= h($detailUrl) ?>"
+                        class="mt-auto pt-6 text-sm font-semibold hover:text-tt-orange">
                         Lihat Detail &rarr;
-
                     </a>
 
                 </article>
 
             <?php endforeach; ?>
 
-
         <?php endif; ?>
 
     </div>
 
-    <!-- Filter not found -->
-    <div id="filter-empty" class="mt-6 hidden rounded-2xl border border-tt-outline bg-white p-10 text-center">
-
-        <h3 class="font-display text-xl font-bold text-tt-navy">
-            Laporan Tidak Ditemukan
-        </h3>
-
-        <p class="mt-2 text-sm text-slate-500">
-            Tidak ada laporan yang sesuai dengan filter pencarian.
-        </p>
-
-    </div>
-
 </main>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-
-        const form = document.getElementById('filter-form');
-
-        const inputNama = document.getElementById('filter-nama');
-        const inputJenis = document.getElementById('filter-jenis');
-        const inputLokasi = document.getElementById('filter-lokasi');
-        const inputKategori = document.getElementById('filter-kategori');
-
-        const cards = document.querySelectorAll('[data-report-card]');
-
-        const emptyMessage = document.getElementById('filter-empty');
-        const totalLaporan = document.getElementById('total-laporan');
-
-        function filterReports() {
-
-            const nama = inputNama.value.toLowerCase().trim();
-            const jenis = inputJenis.value.toLowerCase().trim();
-            const lokasi = inputLokasi.value.toLowerCase().trim();
-            const kategori = inputKategori.value.toLowerCase().trim();
-
-            let visibleCount = 0;
-
-            cards.forEach((card) => {
-
-                const dataNama = (card.dataset.name || '').toLowerCase();
-                const dataJenis = (card.dataset.type || '').toLowerCase();
-                const dataLokasi = (card.dataset.location || '').toLowerCase();
-                const dataKategori = (card.dataset.category || '').toLowerCase();
-
-                const match =
-                    dataNama.includes(nama) &&
-                    dataJenis.includes(jenis) &&
-                    dataLokasi.includes(lokasi) &&
-                    dataKategori.includes(kategori);
-
-                card.classList.toggle('hidden', !match);
-
-                if (match) {
-                    visibleCount++;
-                }
-
-            });
-
-            totalLaporan.textContent = visibleCount;
-
-            emptyMessage.classList.toggle(
-                'hidden',
-                visibleCount !== 0 || cards.length === 0
-            );
-        }
-
-        form.addEventListener('submit', (event) => {
-
-            event.preventDefault();
-            filterReports();
-
-        });
-
-        form.addEventListener('reset', () => {
-
-            requestAnimationFrame(filterReports);
-
-        });
-
-    });
-</script>
 
 <?php require_once APP_ROOT . '/App/views/components/footer.php'; ?>

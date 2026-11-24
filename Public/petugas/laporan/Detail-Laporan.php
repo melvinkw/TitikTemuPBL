@@ -6,7 +6,7 @@ require_once dirname(__DIR__, 3) . '/App/config/bootstrap.php';
 require_once APP_ROOT . '/App/config/database.php';
 require_once APP_ROOT . '/App/helpers/auth.php';
 require_once APP_ROOT . '/App/queries/petugas_laporan_queries.php';
-require_once APP_ROOT . '/App/services/supabase_storage_signed_url.php';
+require_once APP_ROOT . '/App/services/supabase_storage.php';
 
 $currentUser = auth_require_role(['petugas']);
 $pageTitle = 'Detail Laporan';
@@ -107,14 +107,20 @@ $statusLabels = [
     'menunggu' => 'Menunggu Pemeriksaan',
     'aktif' => 'Aktif',
     'tersedia' => 'Tersedia',
+    'diproses' => 'Siap Diambil',
+    'selesai' => 'Selesai',
     'ditolak' => 'Ditolak',
+    'ditutup' => 'Ditutup',
 ];
 
 $statusColors = [
     'menunggu' => 'bg-amber-100 text-amber-800',
     'aktif' => 'bg-green-100 text-green-700',
     'tersedia' => 'bg-blue-100 text-blue-700',
+    'diproses' => 'bg-sky-100 text-sky-700',
+    'selesai' => 'bg-green-100 text-green-700',
     'ditolak' => 'bg-red-100 text-red-700',
+    'ditutup' => 'bg-slate-100 text-slate-700',
 ];
 
 $status = (string) ($report['status'] ?? '');
@@ -169,6 +175,9 @@ require_once APP_ROOT . '/App/views/components/petugas/navbar.php';
 
                 <p>
                     <?= h($report['nama_pelapor'] ?? '-') ?>
+                    <?php if (!empty($report['nim_pelapor'])): ?>
+                        (<?= h($report['nim_pelapor']) ?>)
+                    <?php endif; ?>
                 </p>
 
             </div>
