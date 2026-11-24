@@ -52,7 +52,7 @@ function find_mahasiswa_active_claim(PDO $pdo, int $idPengumuman, int $idPenggun
         FROM klaim
         WHERE id_pengumuman = :id_pengumuman
           AND id_pengguna = :id_pengguna
-          AND status_verifikasi IN ('menunggu', 'disetujui')
+          AND status_verifikasi IN ('menunggu', 'siap_diambil')
         ORDER BY tanggal_pengajuan DESC
         LIMIT 1
         SQL;
@@ -143,20 +143,20 @@ function get_mahasiswa_claim_history(PDO $pdo, int $idPengguna): array
     $claimsSql = <<<'SQL'
         SELECT
             c.id_klaim,
-            c.id_pengumuman,
-            c.deskripsi_bukti,
             c.status_verifikasi,
             c.tanggal_pengajuan,
+            c.tanggal_diterima,
+            c.rating_feedback,
+            c.komentar_feedback,
             c.catatan_verifikasi,
             p.judul,
             p.lokasi_kejadian,
-            p.tanggal_waktu_kejadian,
-            pemohon.nama AS nama_pemohon
+            pos.nama_pos
         FROM klaim AS c
         INNER JOIN pengumuman AS p
             ON p.id_pengumuman = c.id_pengumuman
-        INNER JOIN pengguna AS pemohon
-            ON pemohon.id_pengguna = c.id_pengguna
+        LEFT JOIN pos_penyerahan AS pos
+            ON pos.id_pos = p.id_pos
         WHERE c.id_pengguna = :id_pengguna
         ORDER BY c.tanggal_pengajuan DESC
         SQL;
@@ -176,4 +176,68 @@ function get_mahasiswa_claim_history(PDO $pdo, int $idPengguna): array
         )),
         'klaim' => $claims,
     ];
+}
+
+/**
+ * Detail satu klaim milik mahasiswa untuk halaman konfirmasi penerimaan.
+ * Hanya klaim milik pengguna yang sedang login yang dapat diambil.
+ */
+function get_mahasiswa_claim_confirmation_detail(
+    PDO $pdo,
+    int $idKlaim,
+    int $idPengguna
+): ?array {
+    $sql = <<<'SQL'
+        SELECT
+            c.id_klaim,
+            c.id_pengumuman,
+            c.status_verifikasi,
+            c.tanggal_pengajuan,
+            c.tanggal_verifikasi,
+            c.tanggal_diterima,
+            c.rating_feedback,
+            c.komentar_feedback,
+            c.catatan_verifikasi,
+
+            p.judul,
+            p.deskripsi,
+            p.lokasi_kejadian,
+            p.tanggal_waktu_kejadian,
+
+            k.nama_kategori,
+
+            pos.nama_pos,
+            pos.detail_lokasi AS detail_pos,
+
+            lokasi.nama_lokasi
+
+        FROM klaim AS c
+
+        INNER JOIN pengumuman AS p
+            ON p.id_pengumuman = c.id_pengumuman
+
+        INNER JOIN kategori AS k
+            ON k.id_kategori = p.id_kategori
+
+        LEFT JOIN pos_penyerahan AS pos
+            ON pos.id_pos = p.id_pos
+
+        LEFT JOIN lokasi AS lokasi
+            ON lokasi.id_lokasi = pos.id_lokasi
+
+        WHERE c.id_klaim = :id_klaim
+          AND c.id_pengguna = :id_pengguna
+
+        LIMIT 1
+        SQL;
+
+    $statement = $pdo->prepare($sql);
+    $statement->execute([
+        'id_klaim' => $idKlaim,
+        'id_pengguna' => $idPengguna,
+    ]);
+
+    $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+    return $row === false ? null : $row;
 }

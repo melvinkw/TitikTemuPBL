@@ -18,3 +18,10 @@ Thumbs.db
 /storage/siakad-debug/*
 /storage/logs/*
 *.log
+
+# Artefak lokal (screenshot, bahan laporan, tooling Playwright MCP)
+.playwright-mcp/
+/shots/
+/tmp_build/
+/Dokumen PBL/
+/docs/

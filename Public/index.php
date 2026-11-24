@@ -11,30 +11,28 @@ if (auth_current_user() !== null) {
     redirect('/dashboard.php');
 }
 
+require_once APP_ROOT . '/App/queries/public_queries.php';
+require_once APP_ROOT . '/App/services/supabase_storage.php';
+
 $pageTitle = 'Beranda';
 $menuAktif = 'beranda';
 
-// Data dummy — nanti diganti dari database
-// Barang temuan = yang sudah diterima petugas.
-$barangTemuan = [
-    ['nama' => 'Tumbler Hitam', 'deskripsi' => 'Ini tumbler warna hitam pekat', 'lokasi' => 'LPR 8', 'waktu' => '24 Oktober 2026 11:45 AM'],
-    ['nama' => 'Tumbler Hitam', 'deskripsi' => 'Ini tumbler warna hitam pekat', 'lokasi' => 'LPR 8', 'waktu' => '24 Oktober 2026 11:45 AM'],
-    ['nama' => 'Tumbler Hitam', 'deskripsi' => 'Ini tumbler warna hitam pekat', 'lokasi' => 'LPR 8', 'waktu' => '24 Oktober 2026 11:45 AM'],
-    ['nama' => 'Tumbler Hitam', 'deskripsi' => 'Ini tumbler warna hitam pekat', 'lokasi' => 'LPR 8', 'waktu' => '24 Oktober 2026 11:45 AM'],
-];
+// Barang temuan = laporan yang sudah disetujui dan siap diklaim.
+$barangTemuan = [];
+$barangHilang = [];
+$berandaError = null;
 
-$barangHilang = [
-    ['nama' => 'MacBook Pro Silver', 'kategori' => 'Elektronik', 'lokasi' => 'LPR 8', 'waktu' => '27-10-2026 13:01', 'status' => 'Aktif'],
-    ['nama' => 'STNK motor', 'kategori' => 'Identitas', 'lokasi' => 'LPR 8', 'waktu' => '27-10-2026 13:01', 'status' => 'Aktif'],
-    ['nama' => 'Jam tangan', 'kategori' => 'Aksesoris', 'lokasi' => 'LPR 8', 'waktu' => '27-10-2026 13:01', 'status' => 'Aktif'],
-];
+try {
+    $barangTemuan = get_public_recent_reports('temuan', 4);
+    $barangHilang = get_public_recent_reports('hilang', 3);
+} catch (Throwable $error) {
+    error_log(
+        '[TitikTemu] Gagal memuat data beranda: '
+        . $error->getMessage()
+    );
 
-// Warna label kategori (sesuai Figma)
-$warnaKategori = [
-    'Elektronik' => 'bg-[#EBE5F2] text-[#8A38F5]',
-    'Identitas'  => 'bg-[#FFF5EF] text-[#E48F31]',
-    'Aksesoris'  => 'bg-[#F0EAF1] text-[#DF38F5]',
-];
+    $berandaError = 'Data barang belum dapat dimuat. Silakan coba lagi.';
+}
 
 // Langkah cara menggunakan TitikTemu
 $langkah = [
@@ -82,15 +80,51 @@ require_once APP_ROOT . '/App/views/components/public/navbar.php';
         <a href="<?= base_url('daftar-barang.php') ?>" class="text-xs font-semibold hover:text-tt-orange">Lihat Semua &gt;&gt;</a>
     </div>
 
+    <?php if ($berandaError !== null): ?>
+        <div role="alert" class="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <?= h($berandaError) ?>
+        </div>
+    <?php endif; ?>
+
     <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
+        <?php if ($barangTemuan === []): ?>
+            <p class="col-span-full rounded-xl border border-indigo-200 bg-white p-8 text-center text-sm text-gray-500">
+                Belum ada barang temuan yang tayang.
+            </p>
+        <?php endif; ?>
+
         <?php foreach ($barangTemuan as $barang): ?>
+            <?php
+            $fotoTemuan = null;
+
+            if (!empty($barang['foto_bucket']) && !empty($barang['foto_path'])) {
+                try {
+                    $fotoTemuan = supabase_storage_create_signed_url(
+                        $barang['foto_bucket'],
+                        $barang['foto_path']
+                    );
+                } catch (Throwable $fotoError) {
+                    error_log(
+                        '[TitikTemu] Gagal memuat foto beranda: '
+                        . $fotoError->getMessage()
+                    );
+                }
+            }
+            ?>
+
             <div class="rounded-2xl border border-tt-outline bg-white p-4">
-                <img src="<?= base_url('assets/images/foto-barang.png') ?>" alt="<?= h($barang['nama']) ?>" class="h-48 w-full rounded-lg object-cover">
-                <h3 class="mt-4 font-display text-lg font-semibold"><?= h($barang['nama']) ?></h3>
+                <?php if ($fotoTemuan !== null): ?>
+                    <img src="<?= h($fotoTemuan) ?>" alt="<?= h($barang['judul']) ?>" loading="lazy" class="h-48 w-full rounded-lg object-cover">
+                <?php else: ?>
+                    <div class="flex h-48 w-full items-center justify-center rounded-lg bg-slate-100 text-sm text-slate-500">Foto belum tersedia</div>
+                <?php endif; ?>
+
+                <h3 class="mt-4 font-display text-lg font-semibold"><?= h($barang['judul']) ?></h3>
                 <p class="text-sm"><?= h($barang['deskripsi']) ?></p>
-                <p class="mt-3 text-sm"><?= h($barang['lokasi']) ?></p>
-                <p class="mt-3 text-sm"><?= h($barang['waktu']) ?></p>
-                <a href="<?= base_url('Detail-Temuan.php') ?>" class="mt-6 inline-block text-sm font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
+                <p class="mt-3 text-sm"><span class="font-semibold">Kategori:</span> <?= h($barang['nama_kategori']) ?></p>
+                <p class="mt-1 text-sm"><span class="font-semibold">Lokasi:</span> <?= h($barang['lokasi_kejadian']) ?></p>
+                <p class="mt-3 text-xs text-gray-500"><?= h(format_date_time($barang['tanggal_waktu_kejadian'])) ?></p>
+                <a href="<?= h(base_url('Detail-Temuan.php?id=' . (int) $barang['id_pengumuman'])) ?>" class="mt-6 inline-block text-sm font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
             </div>
         <?php endforeach; ?>
     </div>
@@ -117,19 +151,27 @@ require_once APP_ROOT . '/App/views/components/public/navbar.php';
                 </tr>
             </thead>
             <tbody>
+                <?php if ($barangHilang === []): ?>
+                    <tr class="border-t border-tt-outline">
+                        <td colspan="6" class="px-6 py-6 text-center text-sm text-gray-500">
+                            Belum ada laporan kehilangan yang tayang.
+                        </td>
+                    </tr>
+                <?php endif; ?>
+
                 <?php foreach ($barangHilang as $barang): ?>
                     <tr class="border-t border-tt-outline">
-                        <td class="px-6 py-4"><?= h($barang['nama']) ?></td>
+                        <td class="px-6 py-4"><?= h($barang['judul']) ?></td>
                         <td class="px-6 py-4">
-                            <span class="rounded-full px-2 py-1 text-xs font-semibold <?= $warnaKategori[$barang['kategori']] ?? 'bg-gray-100 text-gray-600' ?>"><?= h($barang['kategori']) ?></span>
+                            <span class="rounded-full bg-[#EBE5F2] px-2 py-1 text-xs font-semibold text-[#8A38F5]"><?= h($barang['nama_kategori']) ?></span>
                         </td>
-                        <td class="px-6 py-4"><?= h($barang['lokasi']) ?></td>
-                        <td class="px-6 py-4"><?= h($barang['waktu']) ?></td>
+                        <td class="px-6 py-4"><?= h($barang['lokasi_kejadian']) ?></td>
+                        <td class="px-6 py-4"><?= h(format_date_time($barang['tanggal_waktu_kejadian'])) ?></td>
                         <td class="px-6 py-4">
-                            <span class="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700"><?= h($barang['status']) ?></span>
+                            <span class="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">Aktif</span>
                         </td>
                         <td class="px-6 py-4">
-                            <a href="<?= base_url('Detail-Kehilangan.php') ?>" class="font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
+                            <a href="<?= h(base_url('Detail-Kehilangan.php?id=' . (int) $barang['id_pengumuman'])) ?>" class="font-semibold hover:text-tt-orange">Lihat Detail &rarr;</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

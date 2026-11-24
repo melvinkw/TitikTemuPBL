@@ -1,10 +1,12 @@
--- TitikTemu sample data: alur klaim sampai serah terima.
+-- TitikTemu sample data: alur klaim sampai konfirmasi penerimaan.
 -- Jalankan HANYA pada database development / testing, bukan production.
--- Prasyarat: schema awal, seed master, dan 003_add_serah_terima.sql sudah diterapkan.
--- Script ini membuat akun, barang temuan, klaim disetujui, lalu catatan penyerahan.
--- Script dapat dijalankan ulang: data demo yang sudah memiliki serah terima tidak dibuat ulang.
+-- Prasyarat: schema awal, seed master, dan 006_claim_pickup_confirmation.sql sudah diterapkan.
+-- Script ini membuat akun, barang temuan, dan klaim berstatus 'siap_diambil'
+-- sehingga mahasiswa dapat menguji konfirmasi penerimaan beserta feedback.
+-- Script dapat dijalankan ulang tanpa membuat data duplikat.
 --
--- Akun demo menggunakan password awal: Demo123!
+-- Akun demo petugas menggunakan password awal: Demo123!
+-- Akun mahasiswa diautentikasi melalui SIAKAD, jadi tidak punya password lokal.
 -- Ganti atau hapus akun demo sebelum aplikasi dipakai di lingkungan production.
 
 BEGIN;
@@ -67,15 +69,13 @@ BEGIN
 
     ---------------------------------------------------------------------------
     -- 3. Buat akun demo.
-    -- Password awal ketiga akun: Demo123!
-    -- Hash dibuat menggunakan password_hash() PHP.
     ---------------------------------------------------------------------------
     INSERT INTO pengguna (
         nim, username, password_hash, nama, email,
         no_hp, prodi, role, is_active
     )
     VALUES (
-        '999999999999991', NULL, v_hash_demo,
+        '999999999999991', NULL, NULL,
         'Demo Pelapor Barang', 'pelapor.demo@example.test',
         '080000000001', 'Sistem Informasi Bisnis', 'mahasiswa', TRUE
     )
@@ -96,7 +96,7 @@ BEGIN
         no_hp, prodi, role, is_active
     )
     VALUES (
-        '999999999999992', NULL, v_hash_demo,
+        '999999999999992', NULL, NULL,
         'Demo Penerima Barang', 'penerima.demo@example.test',
         '080000000002', 'Sistem Informasi Bisnis', 'mahasiswa', TRUE
     )
@@ -170,7 +170,7 @@ BEGIN
             v_id_pos,
             'temuan',
             v_judul_demo,
-            'Data contoh untuk menguji proses klaim dan serah terima. Barang berupa laptop warna hitam.',
+            'Data contoh untuk menguji proses klaim dan konfirmasi penerimaan. Barang berupa laptop warna hitam.',
             'pelapor.demo@example.test',
             'Ruang administrasi JTI',
             NOW() - INTERVAL '2 days',
@@ -184,7 +184,7 @@ BEGIN
     END IF;
 
     ---------------------------------------------------------------------------
-    -- 5. Jika serah terima untuk klaim demo sudah ada, hentikan tanpa duplikasi.
+    -- 5. Cari klaim demo. Hentikan jika klaim sudah diterima mahasiswa.
     ---------------------------------------------------------------------------
     SELECT id_klaim
     INTO v_id_klaim
@@ -196,13 +196,14 @@ BEGIN
 
     IF v_id_klaim IS NOT NULL AND EXISTS (
         SELECT 1
-        FROM serah_terima
+        FROM klaim
         WHERE id_klaim = v_id_klaim
+          AND status_verifikasi = 'diterima'
     ) THEN
-        RAISE NOTICE 'Sample serah terima sudah tersedia. Tidak ada data duplikat yang dibuat.';
+        RAISE NOTICE 'Sample klaim sudah dikonfirmasi diterima. Tidak ada data duplikat yang dibuat.';
     ELSE
         -----------------------------------------------------------------------
-        -- 6. Pastikan laporan berstatus tersedia sebelum klaim dibuat/disetujui.
+        -- 6. Pastikan laporan berstatus tersedia sebelum klaim dibuat/diverifikasi.
         -----------------------------------------------------------------------
         UPDATE pengumuman
         SET id_kategori = v_id_kategori,
@@ -216,7 +217,7 @@ BEGIN
         WHERE id_pengumuman = v_id_pengumuman;
 
         -----------------------------------------------------------------------
-        -- 7. Buat atau siapkan klaim yang sudah disetujui.
+        -- 7. Buat atau siapkan klaim yang sudah disetujui petugas.
         -- Trigger fn_validasi_klaim memerlukan laporan temuan berstatus tersedia.
         -----------------------------------------------------------------------
         IF v_id_klaim IS NULL THEN
@@ -237,59 +238,31 @@ BEGIN
                 v_id_petugas,
                 'Contoh deskripsi bukti kepemilikan untuk pengujian. Penerima dapat menjelaskan ciri khusus laptop.',
                 NULL,
-                'disetujui',
+                'siap_diambil',
                 NOW() - INTERVAL '12 hours',
                 NOW() - INTERVAL '6 hours',
-                'Klaim demo disetujui untuk pengujian alur serah terima.'
+                'Klaim demo disetujui. Barang siap diambil di pos penyerahan.'
             )
             RETURNING id_klaim INTO v_id_klaim;
         ELSE
             UPDATE klaim
             SET id_petugas = v_id_petugas,
-                status_verifikasi = 'disetujui',
+                status_verifikasi = 'siap_diambil',
                 tanggal_verifikasi = COALESCE(tanggal_verifikasi, NOW()),
-                catatan_verifikasi = 'Klaim demo disetujui untuk pengujian alur serah terima.',
+                catatan_verifikasi = 'Klaim demo disetujui. Barang siap diambil di pos penyerahan.',
                 updated_at = NOW()
             WHERE id_klaim = v_id_klaim;
         END IF;
 
         -----------------------------------------------------------------------
-        -- 8. Laporan masuk tahap diproses sebelum penyerahan dicatat.
+        -- 8. Laporan masuk tahap diproses (barang disimpan di pos penyerahan).
         -----------------------------------------------------------------------
         UPDATE pengumuman
         SET status = 'diproses', updated_at = NOW()
         WHERE id_pengumuman = v_id_pengumuman;
 
         -----------------------------------------------------------------------
-        -- 9. Catat penyerahan. Trigger akan memastikan klaim, petugas, dan pos valid.
-        -----------------------------------------------------------------------
-        INSERT INTO serah_terima (
-            id_klaim,
-            id_petugas,
-            id_pos,
-            nama_penerima,
-            tanggal_serah_terima,
-            catatan
-        )
-        VALUES (
-            v_id_klaim,
-            v_id_petugas,
-            v_id_pos,
-            'Nama ini akan diisi otomatis oleh trigger dari data akun penerima.',
-            NOW(),
-            'Contoh penyerahan barang telah dilakukan di Pos Keamanan Utama Demo.'
-        )
-        ON CONFLICT (id_klaim) DO NOTHING;
-
-        -----------------------------------------------------------------------
-        -- 10. Setelah penyerahan dicatat, tandai laporan sebagai selesai.
-        -----------------------------------------------------------------------
-        UPDATE pengumuman
-        SET status = 'selesai', updated_at = NOW()
-        WHERE id_pengumuman = v_id_pengumuman;
-
-        -----------------------------------------------------------------------
-        -- 11. Tambahkan riwayat status contoh jika belum ada.
+        -- 9. Tambahkan riwayat status contoh jika belum ada.
         -----------------------------------------------------------------------
         INSERT INTO riwayat_status_pengumuman (
             id_pengumuman, status_sebelumnya, status_baru, id_pengubah, catatan
@@ -307,28 +280,16 @@ BEGIN
             id_pengumuman, status_sebelumnya, status_baru, id_pengubah, catatan
         )
         SELECT v_id_pengumuman, 'tersedia', 'diproses', v_id_petugas,
-               'Sample: klaim disetujui dan barang disiapkan untuk diserahkan.'
+               'Sample: klaim disetujui dan barang disiapkan untuk diambil.'
         WHERE NOT EXISTS (
             SELECT 1 FROM riwayat_status_pengumuman
             WHERE id_pengumuman = v_id_pengumuman
               AND status_baru = 'diproses'
-              AND catatan = 'Sample: klaim disetujui dan barang disiapkan untuk diserahkan.'
-        );
-
-        INSERT INTO riwayat_status_pengumuman (
-            id_pengumuman, status_sebelumnya, status_baru, id_pengubah, catatan
-        )
-        SELECT v_id_pengumuman, 'diproses', 'selesai', v_id_petugas,
-               'Sample: barang telah diserahkan kepada penerima.'
-        WHERE NOT EXISTS (
-            SELECT 1 FROM riwayat_status_pengumuman
-            WHERE id_pengumuman = v_id_pengumuman
-              AND status_baru = 'selesai'
-              AND catatan = 'Sample: barang telah diserahkan kepada penerima.'
+              AND catatan = 'Sample: klaim disetujui dan barang disiapkan untuk diambil.'
         );
     END IF;
 
-    RAISE NOTICE 'Sample serah terima selesai diproses.';
+    RAISE NOTICE 'Sample klaim siap diambil selesai diproses.';
     RAISE NOTICE 'ID laporan demo: %', v_id_pengumuman;
     RAISE NOTICE 'ID klaim demo: %', v_id_klaim;
 END;
@@ -336,32 +297,30 @@ $$;
 
 COMMIT;
 
--- Hasil pemeriksaan sample serah terima.
+-- Hasil pemeriksaan sample klaim.
 SELECT
-    st.id_serah_terima,
-    st.tanggal_serah_terima,
-    st.nama_penerima,
-    st.catatan,
-    k.id_klaim,
-    k.status_verifikasi AS status_klaim,
+    c.id_klaim,
+    c.status_verifikasi AS status_klaim,
+    c.tanggal_verifikasi,
+    c.tanggal_diterima,
+    c.rating_feedback,
     p.id_pengumuman,
     p.judul AS judul_barang,
     p.status AS status_laporan,
-    petugas.nama AS nama_petugas,
+    penerima.nama AS nama_penerima,
+    penerima.nim,
     pos.nama_pos
-FROM serah_terima st
-JOIN klaim k
-    ON k.id_klaim = st.id_klaim
+FROM klaim c
 JOIN pengumuman p
-    ON p.id_pengumuman = k.id_pengumuman
-JOIN pengguna petugas
-    ON petugas.id_pengguna = st.id_petugas
-JOIN pos_penyerahan pos
-    ON pos.id_pos = st.id_pos
+    ON p.id_pengumuman = c.id_pengumuman
+JOIN pengguna penerima
+    ON penerima.id_pengguna = c.id_pengguna
+LEFT JOIN pos_penyerahan pos
+    ON pos.id_pos = p.id_pos
 WHERE p.judul = '[DEMO] Laptop ditemukan di area administrasi'
-ORDER BY st.id_serah_terima DESC;
+ORDER BY c.id_klaim DESC;
 
--- Akun demo (password ketiganya: Demo123!).
+-- Akun demo (password petugas: Demo123!).
 SELECT id_pengguna, nim, username, nama, email, role
 FROM pengguna
 WHERE nim IN ('999999999999991', '999999999999992')

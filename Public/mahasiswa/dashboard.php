@@ -12,6 +12,7 @@ require_once __DIR__ . '/../../App/config/bootstrap.php';
 require_once APP_ROOT . '/App/queries/master_queries.php';
 require_once APP_ROOT . '/App/helpers/auth.php';
 require_once APP_ROOT . '/App/queries/mahasiswa_queries.php';
+require_once APP_ROOT . '/App/services/supabase_storage.php';
 
 
 $currentUser = auth_require_role(['mahasiswa']);
@@ -36,7 +37,7 @@ $statusLabels = [
     'menunggu' => 'Menunggu Pemeriksaan',
     'aktif' => 'Aktif',
     'tersedia' => 'Barang Tersedia',
-    'diproses' => 'Sedang Diproses',
+    'diproses' => 'Siap Diambil',
     'selesai' => 'Selesai',
     'ditolak' => 'Ditolak',
     'ditutup' => 'Ditutup',
@@ -136,6 +137,24 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
 
                 <?php
                 $idBarang = (int) $barang['id_pengumuman'];
+                $fotoUrl = null;
+
+if (
+    !empty($barang['foto_bucket'])
+    && !empty($barang['foto_path'])
+) {
+    try {
+        $fotoUrl = supabase_storage_create_signed_url(
+            $barang['foto_bucket'],
+            $barang['foto_path']
+        );
+    } catch (Throwable $error) {
+        error_log(
+            '[TitikTemu] Gagal menampilkan foto dashboard: '
+            . $error->getMessage()
+        );
+    }
+}
 
                 $detailUrl = $barang['milik_saya']
                     ? base_url('mahasiswa/laporan/detail.php?id=' . $idBarang)
@@ -145,9 +164,22 @@ require_once APP_ROOT . '/App/views/components/mahasiswa/navbar.php';
                 <div class="rounded-2xl border border-tt-outline bg-white p-4">
 
                     <!-- Foto akan dihubungkan melalui signed URL Storage. -->
-                    <div class="flex h-48 w-full items-center justify-center rounded-lg bg-slate-100 text-sm text-slate-500">
-                        Foto belum dapat ditampilkan
-                    </div>
+                    <?php if ($fotoUrl !== null): ?>
+
+    <img
+        src="<?= h($fotoUrl) ?>"
+        alt="<?= h($barang['judul']) ?>"
+        loading="lazy"
+        class="h-48 w-full rounded-lg object-cover"
+    >
+
+<?php else: ?>
+
+    <div class="flex h-48 w-full items-center justify-center rounded-lg bg-slate-100 text-sm text-slate-500">
+        Foto belum tersedia
+    </div>
+
+<?php endif; ?>
 
                     <h3 class="mt-4 font-display text-lg font-semibold">
                         <?= h($barang['judul']) ?>

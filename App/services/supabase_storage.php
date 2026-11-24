@@ -157,6 +157,13 @@ function supabase_storage_error_message(array $response): string
 }
 
 /**
+ * Membuat signed URL untuk membaca objek Storage privat.
+ *
+ * Default masa berlaku 5 menit.
+ * Fungsi ini hanya boleh dipanggil setelah hak akses data diperiksa.
+ */
+
+/**
  * Mengunggah isi file sementara PHP ke bucket Supabase.
  * Fungsi melempar RuntimeException jika upload gagal.
  */
@@ -199,6 +206,98 @@ function supabase_storage_upload_file(
         error_log('[TitikTemu] Supabase upload failed: ' . $message);
         throw new RuntimeException('Foto gagal diunggah ke penyimpanan. Silakan coba lagi.');
     }
+}
+
+/**
+ * Membuat Signed URL untuk membaca file dari bucket private.
+ *
+ * Signed URL memberikan akses sementara tanpa membuka bucket
+ * menjadi public dan tanpa mengirim secret key ke browser.
+ *
+ * param int $expiresIn Masa berlaku URL dalam detik.
+ */
+function supabase_storage_create_signed_url(
+    string $bucket,
+    string $path,
+    int $expiresIn = 3600
+): string {
+    $bucket = trim($bucket);
+
+    if (
+        preg_match('/^[a-z0-9][a-z0-9_-]{1,62}$/', $bucket) !== 1
+    ) {
+        throw new InvalidArgumentException('Nama bucket tidak valid.');
+    }
+
+    if ($path === '') {
+        throw new InvalidArgumentException('Path foto tidak boleh kosong.');
+    }
+
+    // Batasi masa berlaku maksimal satu jam.
+    $expiresIn = max(60, min(3600, $expiresIn));
+
+    $config = supabase_storage_config();
+
+    $url = $config['url']
+        . '/storage/v1/object/sign/'
+        . rawurlencode($bucket)
+        . '/'
+        . supabase_storage_encode_path($path);
+
+    $body = json_encode(
+        ['expiresIn' => $expiresIn],
+        JSON_THROW_ON_ERROR
+    );
+
+    $response = supabase_storage_http_request(
+        'POST',
+        $url,
+        ['Content-Type: application/json'],
+        $body
+    );
+
+    if (!$response['success']) {
+        error_log(
+            '[TitikTemu] Signed URL gagal dibuat: '
+            . supabase_storage_error_message($response)
+        );
+
+        throw new RuntimeException(
+            'Foto tidak dapat diakses saat ini.'
+        );
+    }
+
+    $data = json_decode(
+        (string) $response['body'],
+        true
+    );
+
+    $signedPath = $data['signedURL'] ?? null;
+
+    if (!is_string($signedPath) || $signedPath === '') {
+        error_log(
+            '[TitikTemu] Respons Signed URL tidak valid.'
+        );
+
+        throw new RuntimeException(
+            'Respons penyimpanan foto tidak valid.'
+        );
+    }
+
+    // Supabase biasanya mengembalikan path relatif.
+    if (str_starts_with($signedPath, '/storage/v1/')) {
+        return $config['url'] . $signedPath;
+    }
+
+    if (str_starts_with($signedPath, '/')) {
+        return $config['url']
+            . '/storage/v1'
+            . $signedPath;
+    }
+
+    return $config['url']
+        . '/storage/v1/'
+        . ltrim($signedPath, '/');
 }
 
 /**

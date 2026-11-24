@@ -342,7 +342,7 @@ $recentStudents = $dashboardData['recent_students'];
 
     </main>
 
-    <?php require APP_ROOT . '/Public/partials/components/petugas/footer.php'; ?>
+    <?php require APP_ROOT . '/App/views/components/footer-bar.php'; ?>
 
 </body>
 

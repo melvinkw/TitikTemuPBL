@@ -98,7 +98,7 @@ $tabData = [
                 </h1>
 
                 <p class="text-xs leading-relaxed text-tt-navy/80">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    Kategori, lokasi, dan pos penyerahan yang dipakai sebagai pilihan saat mahasiswa membuat laporan.
                 </p>
 
             </div>
@@ -223,7 +223,7 @@ $tabData = [
 
     </main>
 
-     <?php require APP_ROOT . '/Public/partials/components/petugas/footer.php'; ?>
+     <?php require APP_ROOT . '/App/views/components/footer-bar.php'; ?>
 
     <script>
         window.masterData = <?= json_encode(

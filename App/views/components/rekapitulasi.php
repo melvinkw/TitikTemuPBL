@@ -40,6 +40,10 @@ $perLokasi = $perLokasi ?? [
     ['nama' => 'LPR 8', 'total' => 3, 'selesai' => 2],
 ];
 
+// Halaman boleh mengisi $bulan (format YYYY-MM) dan $rekapError.
+$bulan = $bulan ?? '';
+$rekapError = $rekapError ?? null;
+
 // Tabel kategori & lokasi bentuknya sama: judul => [judul kolom pertama, data]
 $tabelRingkasan = [
     'Jumlah Berdasarkan Kategori' => ['Kategori', $perKategori],
@@ -49,12 +53,12 @@ $tabelRingkasan = [
 <div class="flex flex-col gap-4">
     <?php require APP_ROOT . '/App/views/components/judul-halaman.php'; ?>
 
-    <!-- Filter bulan (belum berfungsi) -->
+    <!-- Filter bulan -->
     <form method="get" class="tt-card flex flex-col gap-4 p-4.5 md:flex-row">
         <label class="flex-1">
             <span class="tt-label">Bulan</span>
             <span class="relative block">
-                <input type="month" name="bulan"
+                <input type="month" name="bulan" value="<?= h($bulan) ?>"
                        class="tt-input h-12 pr-11 [&::-webkit-calendar-picker-indicator]:opacity-0">
                 <img src="<?= h(base_url('assets/images/icon-kalender.svg')) ?>" alt=""
                      class="pointer-events-none absolute top-3.25 right-3 h-5.75 w-6">
@@ -64,6 +68,12 @@ $tabelRingkasan = [
             <button type="submit" class="tt-btn w-full">Tampilkan Rekap</button>
         </div>
     </form>
+
+    <?php if ($rekapError !== null): ?>
+        <div role="alert" class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <?= h($rekapError) ?>
+        </div>
+    <?php endif; ?>
 
     <?php require APP_ROOT . '/App/views/components/kartu-statistik.php'; ?>
 </div>
