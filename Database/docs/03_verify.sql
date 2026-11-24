@@ -25,5 +25,5 @@ ORDER BY table_name, ordinal_position;
 SELECT conrelid::regclass AS tabel, conname AS nama_constraint, pg_get_constraintdef(oid) AS definisi
 FROM pg_constraint
 WHERE connamespace='public'::regnamespace
-  AND conname IN ('chk_pengumuman_status_jenis','chk_pos_hanya_untuk_temuan','chk_email_kontak_format','uq_klaim_disetujui_per_barang')
+  AND conname IN ('chk_pengumuman_status_jenis','chk_pos_hanya_untuk_temuan','chk_email_kontak_format','chk_klaim_diterima','chk_klaim_rating_feedback')
 ORDER BY conrelid::regclass::text, conname;
