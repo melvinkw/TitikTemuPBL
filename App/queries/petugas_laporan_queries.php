@@ -3,10 +3,51 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/config/database.php';
 
-/** Mengambil seluruh laporan yang masih menunggu verifikasi petugas. */
-function get_petugas_pending_reports(PDO $pdo): array
+/**
+ * Mengambil laporan yang masih menunggu verifikasi petugas.
+ *
+ * Filter opsional yang didukung:
+ *   'judul'       => potongan judul barang (pencarian teks)
+ *   'jenis'       => 'temuan' atau 'hilang'
+ *   'lokasi'      => potongan lokasi kejadian
+ *   'id_kategori' => id kategori barang
+ */
+function get_petugas_pending_reports(PDO $pdo, array $filters = []): array
 {
-    $sql = <<<'SQL'
+    $conditions = ["p.status = 'menunggu'"];
+    $params = [];
+
+    $judul = trim((string) ($filters['judul'] ?? ''));
+
+    if ($judul !== '') {
+        $conditions[] = 'p.judul ILIKE :judul';
+        $params['judul'] = '%' . petugas_laporan_like_escape($judul) . '%';
+    }
+
+    $jenis = (string) ($filters['jenis'] ?? '');
+
+    if (in_array($jenis, ['temuan', 'hilang'], true)) {
+        $conditions[] = 'p.jenis = :jenis';
+        $params['jenis'] = $jenis;
+    }
+
+    $lokasi = trim((string) ($filters['lokasi'] ?? ''));
+
+    if ($lokasi !== '') {
+        $conditions[] = 'p.lokasi_kejadian ILIKE :lokasi';
+        $params['lokasi'] = '%' . petugas_laporan_like_escape($lokasi) . '%';
+    }
+
+    $idKategori = (int) ($filters['id_kategori'] ?? 0);
+
+    if ($idKategori > 0) {
+        $conditions[] = 'p.id_kategori = :id_kategori';
+        $params['id_kategori'] = $idKategori;
+    }
+
+    $where = implode("\n          AND ", $conditions);
+
+    $sql = <<<SQL
         SELECT
             p.id_pengumuman,
             p.jenis,
@@ -29,11 +70,32 @@ function get_petugas_pending_reports(PDO $pdo): array
             ORDER BY fp.urutan ASC
             LIMIT 1
         ) AS f ON TRUE
-        WHERE p.status = 'menunggu'
+        WHERE {$where}
         ORDER BY p.created_at ASC, p.id_pengumuman ASC
-    SQL;
+        SQL;
 
-    return $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    $statement = $pdo->prepare($sql);
+    $statement->execute($params);
+
+    return $statement->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/** Melindungi karakter khusus LIKE agar input pengguna dicari apa adanya. */
+function petugas_laporan_like_escape(string $value): string
+{
+    return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value);
+}
+
+/** Menghitung seluruh laporan yang masih menunggu verifikasi. */
+function count_petugas_pending_reports(PDO $pdo): int
+{
+    $sql = <<<'SQL'
+        SELECT COUNT(*)
+        FROM pengumuman
+        WHERE status = 'menunggu'
+        SQL;
+
+    return (int) $pdo->query($sql)->fetchColumn();
 }
 
 /** Mengambil satu laporan, seluruh foto, dan riwayat statusnya. */

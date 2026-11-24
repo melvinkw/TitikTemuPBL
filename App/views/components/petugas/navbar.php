@@ -13,6 +13,8 @@ $daftarMenu = [
     'dashboard'     => ['Dashboard',         'petugas/dashboard.php'],
     'laporan-masuk' => ['Laporan Masuk',     'petugas/laporan/Laporan-Masuk.php'],
     'data-master'   => ['Lihat Data Master', 'petugas/data-master.php'],
+    'verifikasi-klaim'  => ['Verifikasi Klaim',  'petugas/klaim/verifikasi.php'],
+    'penerimaan-barang' => ['Penerimaan Barang', 'petugas/klaim/penerimaan.php'],
     'rekapitulasi'  => ['Rekapitulasi',      'petugas/rekapitulasi.php'],
 ];
 
@@ -21,6 +23,8 @@ if (!isset($menuAktif)) {
         'dashboard.php' => 'dashboard',
         'Laporan-Masuk.php', 'Detail-Laporan.php' => 'laporan-masuk',
         'data-master.php' => 'data-master',
+        'verifikasi.php' => 'verifikasi-klaim',
+        'penerimaan.php' => 'penerimaan-barang',
         'rekapitulasi.php' => 'rekapitulasi',
         default => '',
     };
