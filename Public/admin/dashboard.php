@@ -2,13 +2,16 @@
 /**
  * Public/admin/dashboard.php
  * Halaman Dashboard admin (Figma: Admin-Dashboard).
- * Angka statistik dan isi tabel masih data contoh, nanti diganti hasil query database.
+ * Statistik dan isi tabel diambil dari database lewat
+ * App/queries/admin_dashboard_queries.php (memakai ulang query dashboard staff
+ * agar angkanya sama dengan halaman petugas).
  */
 
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../App/config/bootstrap.php';
 require_once APP_ROOT . '/App/helpers/auth.php';
+require_once APP_ROOT . '/App/queries/admin_dashboard_queries.php';
 
 $currentUser = auth_require_role(['admin']);
 
@@ -17,23 +20,54 @@ $menuAktif = 'dashboard';
 $judulHalaman = 'Dashboard Admin';
 $deskripsiHalaman = 'Pantau laporan yang menunggu pemeriksaan, kandidat kecocokan, dan aktivitas mahasiswa dari satu halaman.';
 
-// Data contoh
+$dataDashboard = [
+    'stats' => [
+        'pending_reports' => 0,
+        'pending_claims' => 0,
+        'active_students' => 0,
+        'email_pending' => 0,
+        'email_failed' => 0,
+        'match_candidates' => 0,
+    ],
+    'reports' => [],
+    'recent_students' => [],
+];
+
+$errorDashboard = null;
+
+try {
+    $dataDashboard = get_admin_dashboard_data();
+} catch (Throwable $error) {
+    error_log(
+        '[TitikTemu] Gagal memuat dashboard admin: '
+        . $error->getMessage()
+    );
+
+    $errorDashboard = 'Ringkasan dashboard belum dapat dimuat.';
+}
+
 $statistik = [
-    ['angka' => 128, 'label' => 'Laporan Menunggu Pemeriksaan'],
-    ['angka' => 128, 'label' => 'Mahasiswa Aktif'],
-    ['angka' => 128, 'label' => 'Kandidat Kecocokan'],
-    ['angka' => 128, 'label' => 'Email Menunggu / Gagal'],
+    [
+        'angka' => $dataDashboard['stats']['pending_reports'],
+        'label' => 'Laporan Menunggu Pemeriksaan',
+    ],
+    [
+        'angka' => $dataDashboard['stats']['pending_claims'],
+        'label' => 'Klaim Menunggu Verifikasi',
+    ],
+    [
+        'angka' => $dataDashboard['stats']['active_students'],
+        'label' => 'Mahasiswa Aktif',
+    ],
+    [
+        'angka' => $dataDashboard['stats']['email_pending']
+            + $dataDashboard['stats']['email_failed'],
+        'label' => 'Email Menunggu / Gagal',
+    ],
 ];
 
-$laporanPerluDiperiksa = [
-    ['jenis' => 'Temuan',     'barang' => 'TWS Putih',  'pelapor' => 'Jorn Doe', 'lokasi' => 'LPR 8', 'dibuat' => '27-10-2026 17:01'],
-    ['jenis' => 'Kehilangan', 'barang' => 'TWS Huawei', 'pelapor' => 'John Doe', 'lokasi' => 'LPR 8', 'dibuat' => '27-10-2026 13:01'],
-];
-
-$loginTerbaru = [
-    ['nama' => 'John Doe', 'nim' => '254107060001', 'prodi' => 'D-IV Sistem Informasi Bisnis', 'login' => '27-10-2026 13:01'],
-    ['nama' => 'Jorn Doe', 'nim' => '254107060002', 'prodi' => 'D-IV Teknik Informatika',      'login' => '27-10-2026 17:01'],
-];
+$laporanPerluDiperiksa = $dataDashboard['reports'];
+$loginTerbaru = $dataDashboard['recent_students'];
 
 require_once APP_ROOT . '/App/views/components/header.php';
 require_once APP_ROOT . '/App/views/components/admin/navbar.php';
@@ -47,6 +81,12 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
         <p class="text-xs">Selamat datang kembali. Berikut ringkasan aktivitas TitikTemu hari ini.</p>
     </div>
 
+    <?php if ($errorDashboard !== null): ?>
+        <div role="alert" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            <?= h($errorDashboard) ?>
+        </div>
+    <?php endif; ?>
+
     <?php require APP_ROOT . '/App/views/components/judul-halaman.php'; ?>
 
     <?php require APP_ROOT . '/App/views/components/kartu-statistik.php'; ?>
@@ -55,8 +95,7 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
     <section class="mt-2.5 flex flex-col gap-2.5">
         <div class="flex items-end justify-between gap-2.5">
             <h2 class="p-4 font-display text-xl font-semibold">Laporan yang Perlu Diperiksa</h2>
-            <!-- Halaman daftar semua laporan belum ada -->
-            <a href="#" class="px-2.75 py-3 text-sm font-semibold whitespace-nowrap hover:text-tt-orange">Lihat Semua &gt;&gt;</a>
+            <a href="<?= h(base_url('admin/laporan/daftar.php')) ?>" class="px-2.75 py-3 text-sm font-semibold whitespace-nowrap hover:text-tt-orange">Lihat Semua &gt;&gt;</a>
         </div>
 
         <div class="tt-table-wrap">
@@ -72,18 +111,24 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($laporanPerluDiperiksa as $laporan): ?>
+                    <?php if ($laporanPerluDiperiksa === []): ?>
                         <tr>
-                            <td><?= h($laporan['jenis']) ?></td>
-                            <td><?= h($laporan['barang']) ?></td>
-                            <td><?= h($laporan['pelapor']) ?></td>
-                            <td><?= h($laporan['lokasi']) ?></td>
-                            <td class="whitespace-nowrap"><?= h($laporan['dibuat']) ?></td>
-                            <td>
-                                <a href="<?= h(base_url('admin/laporan/detail.php')) ?>" class="tt-btn">Periksa</a>
-                            </td>
+                            <td colspan="6" class="text-center">Tidak ada laporan yang menunggu pemeriksaan.</td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php else: ?>
+                        <?php foreach ($laporanPerluDiperiksa as $laporan): ?>
+                            <tr>
+                                <td><?= h($laporan['jenis']) ?></td>
+                                <td><?= h($laporan['judul']) ?></td>
+                                <td><?= h($laporan['pelapor']) ?></td>
+                                <td><?= h($laporan['lokasi']) ?></td>
+                                <td class="whitespace-nowrap"><?= h(format_date_time($laporan['created_at'])) ?></td>
+                                <td>
+                                    <a href="<?= h(base_url('admin/laporan/detail.php?id=' . (int) $laporan['id_pengumuman'])) ?>" class="tt-btn">Periksa</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -111,14 +156,20 @@ require_once APP_ROOT . '/App/views/components/admin/navbar.php';
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($loginTerbaru as $mahasiswa): ?>
+                    <?php if ($loginTerbaru === []): ?>
                         <tr>
-                            <td><?= h($mahasiswa['nama']) ?></td>
-                            <td><?= h($mahasiswa['nim']) ?></td>
-                            <td><?= h($mahasiswa['prodi']) ?></td>
-                            <td class="whitespace-nowrap"><?= h($mahasiswa['login']) ?></td>
+                            <td colspan="4" class="text-center">Belum ada mahasiswa yang login.</td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php else: ?>
+                        <?php foreach ($loginTerbaru as $mahasiswa): ?>
+                            <tr>
+                                <td><?= h($mahasiswa['nama']) ?></td>
+                                <td><?= h($mahasiswa['nim']) ?></td>
+                                <td><?= h($mahasiswa['prodi']) ?></td>
+                                <td class="whitespace-nowrap"><?= h(format_date_time($mahasiswa['last_login'])) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
