@@ -1,30 +1,12 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Public/Detail-Temuan.php
- * Detail barang temuan untuk pengunjung yang belum login (Figma: Public-Detail Temuan).
- * Isi halaman ada di komponen App/views/components/public/detail-barang.php.
+ * Detail barang temuan untuk pengunjung (belum login).
  */
-require_once __DIR__ . '/../App/config/bootstrap.php';
 
-$pageTitle = 'Detail Barang Temuan';
-$menuAktif = 'daftar-barang';
+$jenisHalaman = 'temuan';
 
-// Data contoh — nanti diganti dari database
-$barang = [
-    'kategori' => 'Elektronik',
-    'nama'     => 'TWS Huawei',
-    'lokasi'   => 'LPR 8',
-    'waktu'    => '24 Oktober 2026 12:45',
-    'pelapor'  => 'John Doe',
-    'status'   => 'Aktif',
-    'dibuat'   => '29-10-2026 13:57',
-    'foto'     => ['assets/images/foto-barang.png', 'assets/images/foto-barang.png', 'assets/images/foto-barang.png'],
-];
-
-// Barang temuan bisa diklaim, jadi pengunjung diajak login dulu
-$tampilkanAjakanLogin = true;
-
-require_once APP_ROOT . '/App/views/components/header.php';
-require_once APP_ROOT . '/App/views/components/public/navbar.php';
-require APP_ROOT . '/App/views/components/public/detail-barang.php';
-require_once APP_ROOT . '/App/views/components/footer.php';
+require __DIR__ . '/partials/detail-laporan-publik.php';
